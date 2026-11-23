@@ -768,17 +768,19 @@ input:focus {
 
 const firebaseConfig = {
 
-  apiKey: "BURAYA_API_KEY",
+  apiKey: "AIzaSyD_JEXFMYOR_z4sM4jgBwM0v6aooT9qeLE",
 
-  authDomain: "BURAYA_PROJECT_ID.firebaseapp.com",
+  authDomain: "gravebound.firebaseapp.com",
 
-  projectId: "BURAYA_PROJECT_ID",
+  projectId: "gravebound",
 
-  storageBucket: "BURAYA_PROJECT_ID.appspot.com",
+  storageBucket: "gravebound.firebasestorage.app",
 
-  messagingSenderId: "BURAYA_SENDER_ID",
+  messagingSenderId: "848613573588",
 
-  appId: "BURAYA_APP_ID"
+  appId: "1:848613573588:web:de9ad82d30567d43358c41",
+
+  measurementId: "G-TZL6F2N2P0"
 
 };
 
@@ -1086,6 +1088,11 @@ function clearSubscriptions() {
 
   unsubscribers=[];
 
+  if(ghostUnsubscribe) {
+    ghostUnsubscribe();
+    ghostUnsubscribe=null;
+  }
+
   clearInterval(pollTimer);
 
   clearInterval(countdownTimer);
@@ -1168,37 +1175,49 @@ $("logoutBtn").onclick=async()=>{
 
 };
 
-onAuthStateChanged(auth||null,async user=>{
+if(firebaseConfigured) {
 
-  clearSubscriptions();
+  onAuthStateChanged(auth,async user=>{
 
-  currentUser=user;
+    clearSubscriptions();
 
-  if(user) {
+    currentUser=user;
 
-    $("welcome").textContent=
+    if(ghostUnsubscribe) {
+      ghostUnsubscribe();
+      ghostUnsubscribe=null;
+    }
 
-      "Hoş geldin, "+user.email.split("@")[0];
+    if(user) {
 
-    showScreen("menuScreen");
+      $("welcome").textContent=
 
-    await loadLeaderboard();
+        "Hoş geldin, "+(user.email ? user.email.split("@")[0] : "Oyuncu");
 
-    startWindowClock();
+      showScreen("menuScreen");
 
-    subscribeWorld();
+      await loadLeaderboard();
 
-  } else {
+      startWindowClock();
 
-    showScreen("authScreen");
+      subscribeWorld();
 
-    myTurn=false;
+    } else {
 
-    playing=false;
+      showScreen("authScreen");
 
-  }
+      myTurn=false;
 
-});
+      playing=false;
+
+    }
+
+  });
+
+} else {
+  showScreen("authScreen");
+  toast("Firebase bağlantısı yapılandırılmamış.");
+}
 
 // ==========================================
 
@@ -1363,6 +1382,8 @@ $("enterBtn").onclick=async()=>{
         displayName:currentUser.email.split("@")[0],
 
         day,
+
+        amountKurus:CONFIG.PRICE_KURUS,
 
         status:"QUEUED",
 
