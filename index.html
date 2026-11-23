@@ -1,0 +1,3199 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+
+<meta name="theme-color" content="#0d0a1a">
+
+<title>GRAVEBOUND — The Last Journey</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+<style>
+
+/* ==============================
+
+   GRAVEBOUND - DESIGN SYSTEM
+
+============================== */
+
+:root {
+
+  --bg:#0d0a1a;
+
+  --panel:#171127;
+
+  --panel2:#211735;
+
+  --purple:#a855f7;
+
+  --purple2:#7e22ce;
+
+  --green:#4ade80;
+
+  --red:#fb4444;
+
+  --gold:#fbbf24;
+
+  --text:#eee7ff;
+
+  --muted:#9588aa;
+
+  --border:#392850;
+
+}
+
+* {
+
+  box-sizing:border-box;
+
+  -webkit-tap-highlight-color:transparent;
+
+}
+
+body {
+
+  margin:0;
+
+  background:var(--bg);
+
+  color:var(--text);
+
+  font-family:'VT323',monospace;
+
+  font-size:23px;
+
+  min-height:100vh;
+
+  overflow-x:hidden;
+
+}
+
+button,input {
+
+  font-family:inherit;
+
+}
+
+button {
+
+  cursor:pointer;
+
+}
+
+.hidden {
+
+  display:none!important;
+
+}
+
+.pixel {
+
+  font-family:'Press Start 2P',monospace;
+
+}
+
+#app {
+
+  min-height:100vh;
+
+  position:relative;
+
+  overflow:hidden;
+
+}
+
+.screen {
+
+  width:100%;
+
+  min-height:100vh;
+
+  padding:25px 16px;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+}
+
+.panel {
+
+  width:min(100%,480px);
+
+  background:linear-gradient(145deg,#211735,#130f20);
+
+  border:1px solid var(--border);
+
+  border-radius:15px;
+
+  padding:25px;
+
+  box-shadow:0 15px 50px #0008;
+
+}
+
+.logo {
+
+  text-align:center;
+
+  color:var(--purple);
+
+  font-size:clamp(23px,5vw,34px);
+
+  text-shadow:0 0 20px #a855f780;
+
+  line-height:1.6;
+
+}
+
+.subtitle {
+
+  color:var(--muted);
+
+  text-align:center;
+
+  margin:10px 0 25px;
+
+}
+
+input {
+
+  width:100%;
+
+  padding:14px;
+
+  margin:7px 0;
+
+  border:1px solid var(--border);
+
+  border-radius:8px;
+
+  color:white;
+
+  background:#0d0a1a;
+
+  font-size:22px;
+
+  outline:none;
+
+}
+
+input:focus {
+
+  border-color:var(--purple);
+
+}
+
+.btn {
+
+  display:block;
+
+  width:100%;
+
+  padding:15px;
+
+  margin-top:12px;
+
+  border:1px solid #bd7bff;
+
+  border-radius:8px;
+
+  background:linear-gradient(120deg,#9333ea,#6b21a8);
+
+  color:white;
+
+  font-size:24px;
+
+  transition:.2s;
+
+}
+
+.btn:hover {
+
+  box-shadow:0 0 25px #a855f780;
+
+  transform:translateY(-2px);
+
+}
+
+.btn:disabled {
+
+  opacity:.35;
+
+  cursor:not-allowed;
+
+  transform:none;
+
+  box-shadow:none;
+
+}
+
+.btn.secondary {
+
+  background:#211735;
+
+  border-color:var(--border);
+
+}
+
+.btn.gold {
+
+  background:linear-gradient(120deg,#b7791f,#854d0e);
+
+  border-color:var(--gold);
+
+}
+
+.small {
+
+  font-size:17px;
+
+  color:var(--muted);
+
+  text-align:center;
+
+  margin-top:15px;
+
+}
+
+.status {
+
+  text-align:center;
+
+  color:var(--green);
+
+  margin:15px 0;
+
+}
+
+.section-title {
+
+  color:var(--gold);
+
+  font-size:19px;
+
+  text-align:center;
+
+  margin:20px 0;
+
+}
+
+#leaderboard {
+
+  border-top:1px solid var(--border);
+
+  padding-top:12px;
+
+}
+
+.leader-row {
+
+  display:flex;
+
+  justify-content:space-between;
+
+  padding:7px;
+
+  border-bottom:1px solid #ffffff0b;
+
+}
+
+/* ==============================
+
+   GAME
+
+============================== */
+
+#gameScreen {
+
+  padding:0;
+
+  align-items:stretch;
+
+  flex-direction:column;
+
+  height:100dvh;
+
+  min-height:450px;
+
+}
+
+.hud {
+
+  height:65px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-around;
+
+  gap:5px;
+
+  background:#130e20;
+
+  border-bottom:1px solid var(--border);
+
+  flex-shrink:0;
+
+  z-index:5;
+
+}
+
+.hud-item {
+
+  text-align:center;
+
+  font-size:19px;
+
+  color:var(--green);
+
+}
+
+.hud-item small {
+
+  display:block;
+
+  font-size:13px;
+
+  color:var(--muted);
+
+}
+
+#gameCanvas {
+
+  display:block;
+
+  width:100%;
+
+  flex:1;
+
+  min-height:0;
+
+  background:#0d0a1a;
+
+  touch-action:none;
+
+}
+
+.game-footer {
+
+  height:90px;
+
+  flex-shrink:0;
+
+  background:#130e20;
+
+  border-top:1px solid var(--border);
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-around;
+
+  padding:10px;
+
+}
+
+.control {
+
+  width:65px;
+
+  height:60px;
+
+  border:1px solid var(--purple);
+
+  border-radius:12px;
+
+  background:#28183e;
+
+  color:white;
+
+  font-size:30px;
+
+  touch-action:none;
+
+  user-select:none;
+
+}
+
+.control.jump {
+
+  width:100px;
+
+  background:#59258b;
+
+}
+
+#turnOverlay {
+
+  position:absolute;
+
+  inset:65px 0 90px;
+
+  z-index:4;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  background:#0d0a1a55;
+
+  pointer-events:none;
+
+}
+
+.overlay-card {
+
+  padding:20px;
+
+  background:#171127ee;
+
+  border:1px solid var(--purple);
+
+  border-radius:12px;
+
+  text-align:center;
+
+  max-width:85%;
+
+}
+
+.overlay-card h2 {
+
+  font-family:'Press Start 2P';
+
+  font-size:15px;
+
+  color:var(--purple);
+
+  line-height:2;
+
+}
+
+#toast {
+
+  position:fixed;
+
+  bottom:25px;
+
+  left:50%;
+
+  transform:translateX(-50%);
+
+  background:#261a39;
+
+  border:1px solid var(--purple);
+
+  padding:12px 22px;
+
+  border-radius:10px;
+
+  z-index:100;
+
+  display:none;
+
+  max-width:90%;
+
+  text-align:center;
+
+}
+
+.pulse {
+
+  animation:pulse 1.5s infinite;
+
+}
+
+@keyframes pulse {
+
+  50% { opacity:.55; }
+
+}
+
+#deathOverlay {
+
+  position:fixed;
+
+  inset:0;
+
+  background:#6b000066;
+
+  z-index:20;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  animation:fadeIn .5s;
+
+}
+
+@keyframes fadeIn {
+
+  from {opacity:0}
+
+  to {opacity:1}
+
+}
+
+@media(max-width:600px) {
+
+  .panel {padding:20px;}
+
+  .hud-item {font-size:16px;}
+
+  .hud-item small {font-size:11px;}
+
+  .game-footer {height:85px;}
+
+  .control {width:58px;height:55px;}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="app">
+
+<!-- AUTH SCREEN -->
+
+<section id="authScreen" class="screen">
+
+  <div class="panel">
+
+    <div class="logo pixel">GRAVEBOUND</div>
+
+    <div class="subtitle">THE LAST JOURNEY</div>
+
+    <div id="authMessage" class="status">
+
+      Dünyaya katılmak için giriş yap.
+
+    </div>
+
+    <input id="email" type="email" placeholder="E-posta" autocomplete="email">
+
+    <input id="password" type="password" placeholder="Şifre" autocomplete="current-password">
+
+    <button class="btn" id="loginBtn">GİRİŞ YAP</button>
+
+    <button class="btn secondary" id="registerBtn">HESAP OLUŞTUR</button>
+
+    <div class="small">
+
+      Bu dünyada herkesin bir hikâyesi var.<br>
+
+      Her ölüm geride bir iz bırakır.
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- MENU SCREEN -->
+
+<section id="menuScreen" class="screen hidden">
+
+  <div class="panel">
+
+    <div class="logo pixel">GRAVEBOUND</div>
+
+    <div class="subtitle">THE WORLD REMEMBERS YOU</div>
+
+    <div id="welcome" class="status"></div>
+
+    <div class="section-title">✦ BUGÜNÜN KAHRAMANLARI ✦</div>
+
+    <div id="leaderboard">
+
+      <div class="leader-row">
+
+        <span>Henüz oyuncu yok</span>
+
+        <span>—</span>
+
+      </div>
+
+    </div>
+
+    <button class="btn gold" id="enterBtn">
+
+      10₺ ÖDE VE SIRAYA GİR
+
+    </button>
+
+    <div id="windowMessage" class="small"></div>
+
+    <button class="btn secondary" id="logoutBtn">ÇIKIŞ YAP</button>
+
+  </div>
+
+</section>
+
+<!-- LOBBY -->
+
+<section id="lobbyScreen" class="screen hidden">
+
+  <div class="panel">
+
+    <div class="logo pixel">GRAVEBOUND</div>
+
+    <div class="section-title">SIRA SENİ BEKLİYOR</div>
+
+    <div class="status pulse" id="queuePosition">
+
+      Sıran hesaplanıyor...
+
+    </div>
+
+    <div class="subtitle" id="queueEstimate"></div>
+
+    <div class="small">
+
+      Dünyadaki diğer oyuncuları izleyebilirsin.<br>
+
+      Sıra sana geldiğinde macera başlayacak.
+
+    </div>
+
+    <button class="btn secondary" id="backMenuBtn">
+
+      MENÜYE DÖN
+
+    </button>
+
+  </div>
+
+</section>
+
+<!-- GAME -->
+
+<section id="gameScreen" class="screen hidden">
+
+  <div class="hud">
+
+    <div class="hud-item">
+
+      <small>BÖLÜM</small>
+
+      <span id="levelText">1</span>
+
+    </div>
+
+    <div class="hud-item">
+
+      <small>TUR SÜRESİ</small>
+
+      <span id="timerText">60</span>
+
+    </div>
+
+    <div class="hud-item">
+
+      <small>SIRA</small>
+
+      <span id="positionText">1</span>
+
+    </div>
+
+    <div class="hud-item">
+
+      <small>DURUM</small>
+
+      <span id="turnText">BEKLE</span>
+
+    </div>
+
+  </div>
+
+  <canvas id="gameCanvas" aria-label="GRAVEBOUND oyun alanı"></canvas>
+
+  <div id="turnOverlay">
+
+    <div class="overlay-card">
+
+      <h2 id="overlayTitle">BEKLENİYOR</h2>
+
+      <div id="overlayDescription">Oyuncu bekleniyor...</div>
+
+    </div>
+
+  </div>
+
+  <div class="game-footer">
+
+    <button class="control" id="leftBtn" aria-label="Sola git">◀</button>
+
+    <button class="control" id="rightBtn" aria-label="Sağa git">▶</button>
+
+    <button class="control jump" id="jumpBtn" aria-label="Zıpla">JUMP</button>
+
+  </div>
+
+</section>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+</div>
+
+<!-- FIREBASE + GAME LOGIC -->
+
+<script type="module">
+
+// ==========================================
+
+// CONFIG
+
+// ==========================================
+
+const firebaseConfig = {
+
+  apiKey: "BURAYA_API_KEY",
+
+  authDomain: "BURAYA_PROJECT_ID.firebaseapp.com",
+
+  projectId: "BURAYA_PROJECT_ID",
+
+  storageBucket: "BURAYA_PROJECT_ID.appspot.com",
+
+  messagingSenderId: "BURAYA_SENDER_ID",
+
+  appId: "BURAYA_APP_ID"
+
+};
+
+const CONFIG = Object.freeze({
+
+  PRICE_KURUS:1000,
+
+  TURN_MS:60000,
+
+  WINDOW_START_HOUR:17,
+
+  WINDOW_END_HOUR:20,
+
+  POLL_MS:3000,
+
+  PLAYER_WIDTH:28,
+
+  PLAYER_HEIGHT:38,
+
+  SPEED:3.4,
+
+  JUMP:-10.5,
+
+  GRAVITY:.48,
+
+  PLATFORM_HEIGHT:18,
+
+  WORLD_WIDTH:5000,
+
+  LEVEL_SEED:92837,
+
+  FLOOR_Y:0.82,
+
+  MAX_DELTA:35
+
+});
+
+// ==========================================
+
+// FIREBASE IMPORTS
+
+// ==========================================
+
+import { initializeApp }
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+
+  getAuth,
+
+  createUserWithEmailAndPassword,
+
+  signInWithEmailAndPassword,
+
+  signOut,
+
+  onAuthStateChanged
+
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+
+  getFirestore,
+
+  collection,
+
+  doc,
+
+  addDoc,
+
+  getDoc,
+
+  getDocs,
+
+  query,
+
+  where,
+
+  orderBy,
+
+  limit,
+
+  onSnapshot,
+
+  runTransaction,
+
+  serverTimestamp,
+
+  Timestamp
+
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfigured =
+
+  firebaseConfig.apiKey !== "BURAYA_API_KEY" &&
+
+  firebaseConfig.projectId !== "BURAYA_PROJECT_ID";
+
+let app,auth,db;
+
+if(firebaseConfigured) {
+
+  app=initializeApp(firebaseConfig);
+
+  auth=getAuth(app);
+
+  db=getFirestore(app);
+
+}
+
+// ==========================================
+
+// GLOBAL STATE
+
+// ==========================================
+
+let currentUser=null;
+
+let currentEntry=null;
+
+let gameState={
+
+  level:1,
+
+  x:60,
+
+  y:0,
+
+  currentUserId:null,
+
+  currentEntryId:null,
+
+  turnEndsAt:null
+
+};
+
+let myTurn=false;
+
+let playing=false;
+
+let dead=false;
+
+let completed=false;
+
+let entries=[];
+
+let graves=[];
+
+let activeGhost=null;
+
+let unsubscribers=[];
+
+let pollTimer=null;
+
+let countdownTimer=null;
+
+let toastTimer=null;
+
+let levelPlatforms=[];
+
+let levelTraps=[];
+
+let portal=null;
+
+const canvas=document.getElementById("gameCanvas");
+
+const ctx=canvas.getContext("2d");
+
+const player={
+
+  x:60,
+
+  y:0,
+
+  vx:0,
+
+  vy:0,
+
+  onGround:false,
+
+  facing:1,
+
+  frame:0
+
+};
+
+const camera={x:0};
+
+const input={
+
+  left:false,
+
+  right:false,
+
+  jump:false
+
+};
+
+let particles=[];
+
+let screenShake=0;
+
+// ==========================================
+
+// HELPERS
+
+// ==========================================
+
+const $=id=>document.getElementById(id);
+
+function toast(message) {
+
+  const el=$("toast");
+
+  el.textContent=message;
+
+  el.style.display="block";
+
+  clearTimeout(toastTimer);
+
+  toastTimer=setTimeout(()=>{
+
+    el.style.display="none";
+
+  },3000);
+
+}
+
+function showScreen(id) {
+
+  document.querySelectorAll(".screen").forEach(el=>{
+
+    el.classList.add("hidden");
+
+  });
+
+  $(id).classList.remove("hidden");
+
+  if(id==="gameScreen") {
+
+    resizeCanvas();
+
+  }
+
+}
+
+function today() {
+
+  const d=new Date();
+
+  return [
+
+    d.getFullYear(),
+
+    String(d.getMonth()+1).padStart(2,"0"),
+
+    String(d.getDate()).padStart(2,"0")
+
+  ].join("-");
+
+}
+
+function timestampToMs(value) {
+
+  if(!value) return 0;
+
+  if(typeof value==="number") return value;
+
+  if(value.toMillis) return value.toMillis();
+
+  return new Date(value).getTime();
+
+}
+
+function getTurnEnd(state) {
+
+  return timestampToMs(state?.turnEndsAt);
+
+}
+
+function randomSeed(seed) {
+
+  let s=seed>>>0;
+
+  return function() {
+
+    s+=0x6D2B79F5;
+
+    let t=s;
+
+    t=Math.imul(t^t>>>15,t|1);
+
+    t^=t+Math.imul(t^t>>>7,t|61);
+
+    return ((t^t>>>14)>>>0)/4294967296;
+
+  };
+
+}
+
+function clearSubscriptions() {
+
+  unsubscribers.forEach(fn=>fn());
+
+  unsubscribers=[];
+
+  clearInterval(pollTimer);
+
+  clearInterval(countdownTimer);
+
+}
+
+// ==========================================
+
+// AUTH
+
+// ==========================================
+
+$("registerBtn").onclick=async()=>{
+
+  try {
+
+    if(!firebaseConfigured) {
+
+      throw new Error("Önce Firebase yapılandırmasını tamamla.");
+
+    }
+
+    const email=$("email").value.trim();
+
+    const password=$("password").value;
+
+    if(password.length<6) {
+
+      throw new Error("Şifre en az 6 karakter olmalı.");
+
+    }
+
+    await createUserWithEmailAndPassword(
+
+      auth,email,password
+
+    );
+
+    toast("Hesabın oluşturuldu!");
+
+  } catch(e) {
+
+    toast(e.message);
+
+  }
+
+};
+
+$("loginBtn").onclick=async()=>{
+
+  try {
+
+    if(!firebaseConfigured) {
+
+      throw new Error("Firebase ayarlarını tamamlamalısın.");
+
+    }
+
+    await signInWithEmailAndPassword(
+
+      auth,
+
+      $("email").value.trim(),
+
+      $("password").value
+
+    );
+
+  } catch(e) {
+
+    toast(e.message);
+
+  }
+
+};
+
+$("logoutBtn").onclick=async()=>{
+
+  if(auth) await signOut(auth);
+
+};
+
+onAuthStateChanged(auth||null,async user=>{
+
+  clearSubscriptions();
+
+  currentUser=user;
+
+  if(user) {
+
+    $("welcome").textContent=
+
+      "Hoş geldin, "+user.email.split("@")[0];
+
+    showScreen("menuScreen");
+
+    await loadLeaderboard();
+
+    startWindowClock();
+
+    subscribeWorld();
+
+  } else {
+
+    showScreen("authScreen");
+
+    myTurn=false;
+
+    playing=false;
+
+  }
+
+});
+
+// ==========================================
+
+// DAILY WINDOW
+
+// ==========================================
+
+function isWindowOpen() {
+
+  const now=new Date();
+
+  const hour=now.getHours();
+
+  return hour>=CONFIG.WINDOW_START_HOUR &&
+
+         hour<CONFIG.WINDOW_END_HOUR;
+
+}
+
+function getNextWindow() {
+
+  const now=new Date();
+
+  const next=new Date(now);
+
+  next.setHours(CONFIG.WINDOW_START_HOUR,0,0,0);
+
+  if(now.getHours()>=CONFIG.WINDOW_END_HOUR) {
+
+    next.setDate(next.getDate()+1);
+
+  }
+
+  return next;
+
+}
+
+function startWindowClock() {
+
+  updateWindow();
+
+  const timer=setInterval(updateWindow,1000);
+
+  unsubscribers.push(()=>{
+
+    clearInterval(timer);
+
+  });
+
+}
+
+function updateWindow() {
+
+  const btn=$("enterBtn");
+
+  if(!currentUser) return;
+
+  if(isWindowOpen()) {
+
+    btn.disabled=false;
+
+    $("windowMessage").textContent=
+
+      "✦ KAPI AÇIK — 20:00'DE KAPANIR ✦";
+
+  } else {
+
+    btn.disabled=true;
+
+    const diff=getNextWindow()-new Date();
+
+    const h=Math.floor(diff/3600000);
+
+    const m=Math.floor(diff%3600000/60000);
+
+    const s=Math.floor(diff%60000/1000);
+
+    $("windowMessage").textContent=
+
+      `Sıra 17:00'de açılır • ${h}sa ${m}dk ${s}sn`;
+
+  }
+
+}
+
+// ==========================================
+
+// QUEUE + MOCK PAYMENT
+
+// ==========================================
+
+$("enterBtn").onclick=async()=>{
+
+  if(!currentUser || !isWindowOpen()) return;
+
+  try {
+
+    const day=today();
+
+    const existing=query(
+
+      collection(db,"entries"),
+
+      where("userId","==",currentUser.uid),
+
+      where("day","==",day)
+
+    );
+
+    const existingDocs=await getDocs(existing);
+
+    if(!existingDocs.empty) {
+
+      currentEntry={
+
+        id:existingDocs.docs[0].id,
+
+        ...existingDocs.docs[0].data()
+
+      };
+
+      toast("Bugün zaten sıraya katılmışsın.");
+
+      showScreen("lobbyScreen");
+
+      startQueue();
+
+      return;
+
+    }
+
+    // MOCK PAYMENT:
+
+    // Gerçek para tahsilatı YAPILMAZ.
+
+    const payment=await addDoc(
+
+      collection(db,"payments"),
+
+      {
+
+        userId:currentUser.uid,
+
+        amountKurus:CONFIG.PRICE_KURUS,
+
+        status:"PAID",
+
+        createdAt:serverTimestamp()
+
+      }
+
+    );
+
+    const entry=await addDoc(
+
+      collection(db,"entries"),
+
+      {
+
+        userId:currentUser.uid,
+
+        displayName:currentUser.email.split("@")[0],
+
+        day,
+
+        status:"QUEUED",
+
+        paidAt:serverTimestamp(),
+
+        turnEndsAt:null,
+
+        bestLevel:1
+
+      }
+
+    );
+
+    currentEntry={
+
+      id:entry.id,
+
+      userId:currentUser.uid,
+
+      status:"QUEUED",
+
+      paymentId:payment.id
+
+    };
+
+    toast("Sıraya katıldın!");
+
+    showScreen("lobbyScreen");
+
+    startQueue();
+
+  } catch(e) {
+
+    toast("İşlem başarısız: "+e.message);
+
+  }
+
+};
+
+// ==========================================
+
+// WORLD SUBSCRIPTIONS
+
+// ==========================================
+
+function subscribeWorld() {
+
+  const stateRef=doc(db,"gameState","current");
+
+  const unsubState=onSnapshot(
+
+    stateRef,
+
+    snap=>{
+
+      if(snap.exists()) {
+
+        gameState=snap.data();
+
+        if(myTurn) {
+
+          player.x=gameState.x||player.x;
+
+          player.y=gameState.y||player.y;
+
+        }
+
+      }
+
+      updateGameHUD();
+
+    },
+
+    e=>toast("Dünya bağlantı hatası: "+e.message)
+
+  );
+
+  unsubscribers.push(unsubState);
+
+  const gravesQuery=query(
+
+    collection(db,"graves"),
+
+    orderBy("createdAt","asc")
+
+  );
+
+  const unsubGraves=onSnapshot(
+
+    gravesQuery,
+
+    snap=>{
+
+      graves=snap.docs.map(d=>({
+
+        id:d.id,
+
+        ...d.data()
+
+      }));
+
+    },
+
+    e=>toast("Mezarlık yüklenemedi.")
+
+  );
+
+  unsubscribers.push(unsubGraves);
+
+  const entryQuery=query(
+
+    collection(db,"entries"),
+
+    where("day","==",today()),
+
+    orderBy("paidAt","asc")
+
+  );
+
+  const unsubEntries=onSnapshot(
+
+    entryQuery,
+
+    snap=>{
+
+      entries=snap.docs.map(d=>({
+
+        id:d.id,
+
+        ...d.data()
+
+      }));
+
+      updateQueueUI();
+
+    },
+
+    e=>toast("Sıra listesi yüklenemedi.")
+
+  );
+
+  unsubscribers.push(unsubEntries);
+
+}
+
+// ==========================================
+
+// QUEUE POSITION
+
+// ==========================================
+
+function getQueuePosition() {
+
+  if(!currentEntry) return 0;
+
+  const queued=entries.filter(e=>
+
+    e.status==="QUEUED" || e.status==="PLAYING"
+
+  );
+
+  const index=queued.findIndex(e=>
+
+    e.id===currentEntry.id
+
+  );
+
+  return index<0?0:index+1;
+
+}
+
+function updateQueueUI() {
+
+  if(!currentEntry) return;
+
+  const position=getQueuePosition();
+
+  const waiting=Math.max(0,position-1);
+
+  $("queuePosition").textContent=
+
+    position
+
+    ?`SIRAN: ${position}`
+
+    :"Sıra hazırlanıyor...";
+
+  $("queueEstimate").textContent=
+
+    `Önünde ${waiting} kişi var • Tahmini bekleme ~${waiting} dakika`;
+
+  updateGameHUD();
+
+}
+
+$("backMenuBtn").onclick=()=>{
+
+  showScreen("menuScreen");
+
+};
+
+// ==========================================
+
+// QUEUE TRANSACTION
+
+// ==========================================
+
+function startQueue() {
+
+  clearInterval(pollTimer);
+
+  pollTimer=setInterval(async()=>{
+
+    try {
+
+      await checkExpiredTurn();
+
+      await tryClaimTurn();
+
+    } catch(e) {
+
+      console.error("Queue:",e);
+
+    }
+
+  },CONFIG.POLL_MS);
+
+  checkExpiredTurn().then(tryClaimTurn).catch(e=>{
+
+    console.error(e);
+
+  });
+
+}
+
+async function checkExpiredTurn() {
+
+  const stateRef=doc(db,"gameState","current");
+
+  await runTransaction(db,async tx=>{
+
+    const snap=await tx.get(stateRef);
+
+    if(!snap.exists()) return;
+
+    const state=snap.data();
+
+    if(!state.currentUserId) return;
+
+    if(getTurnEnd(state)>Date.now()) return;
+
+    tx.update(stateRef,{
+
+      currentUserId:null,
+
+      currentEntryId:null,
+
+      turnEndsAt:null,
+
+      updatedAt:serverTimestamp()
+
+    });
+
+  });
+
+}
+
+async function tryClaimTurn() {
+
+  if(!currentEntry || !currentUser) return;
+
+  if(myTurn) return;
+
+  const stateRef=doc(db,"gameState","current");
+
+  const entryRef=doc(db,"entries",currentEntry.id);
+
+  await runTransaction(db,async tx=>{
+
+    const stateSnap=await tx.get(stateRef);
+
+    const entrySnap=await tx.get(entryRef);
+
+    if(!entrySnap.exists()) return;
+
+    const entry=entrySnap.data();
+
+    if(entry.status!=="QUEUED") return;
+
+    if(entry.userId!==currentUser.uid) return;
+
+    if(!isWindowOpen()) return;
+
+    let state={
+
+      level:1,
+
+      x:60,
+
+      y:0,
+
+      currentUserId:null,
+
+      currentEntryId:null,
+
+      turnEndsAt:null
+
+    };
+
+    if(stateSnap.exists()) {
+
+      state=stateSnap.data();
+
+    }
+
+    if(state.currentUserId) {
+
+      if(getTurnEnd(state)>Date.now()) return;
+
+      return;
+
+    }
+
+    // Kuyrukta en eski oyuncu kontrolü.
+
+    const queued=entries
+
+      .filter(e=>e.status==="QUEUED")
+
+      .sort((a,b)=>
+
+        timestampToMs(a.paidAt)-
+
+        timestampToMs(b.paidAt)
+
+      );
+
+    if(!queued.length) return;
+
+    if(queued[0].id!==currentEntry.id) return;
+
+    const end=Date.now()+CONFIG.TURN_MS;
+
+    tx.set(stateRef,{
+
+      ...state,
+
+      currentUserId:currentUser.uid,
+
+      currentEntryId:currentEntry.id,
+
+      turnEndsAt:Timestamp.fromMillis(end),
+
+      updatedAt:serverTimestamp()
+
+    });
+
+    tx.update(entryRef,{
+
+      status:"PLAYING",
+
+      turnEndsAt:Timestamp.fromMillis(end)
+
+    });
+
+  });
+
+  const fresh=await getDoc(stateRef);
+
+  if(fresh.exists()) {
+
+    const state=fresh.data();
+
+    if(state.currentUserId===currentUser.uid &&
+
+       state.currentEntryId===currentEntry.id) {
+
+      activateTurn(state);
+
+    }
+
+  }
+
+}
+
+// ==========================================
+
+// TURN
+
+// ==========================================
+
+function activateTurn(state) {
+
+  if(myTurn) return;
+
+  myTurn=true;
+
+  playing=true;
+
+  dead=false;
+
+  gameState=state;
+
+  player.x=state.x||60;
+
+  player.y=state.y||0;
+
+  player.vx=0;
+
+  player.vy=0;
+
+  generateLevel(state.level||1);
+
+  showScreen("gameScreen");
+
+  $("turnOverlay").classList.add("hidden");
+
+  $("turnText").textContent="SENİN";
+
+  startTurnClock();
+
+  toast("SENİN TURUN BAŞLADI!");
+
+}
+
+function startTurnClock() {
+
+  clearInterval(countdownTimer);
+
+  countdownTimer=setInterval(async()=>{
+
+    const end=getTurnEnd(gameState);
+
+    const remaining=Math.max(0,end-Date.now());
+
+    $("timerText").textContent=
+
+      Math.ceil(remaining/1000);
+
+    if(remaining<=0) {
+
+      myTurn=false;
+
+      playing=false;
+
+      await savePosition();
+
+      showScreen("lobbyScreen");
+
+      $("turnOverlay").classList.remove("hidden");
+
+      $("overlayTitle").textContent="TUR BİTTİ";
+
+      $("overlayDescription").textContent=
+
+        "Sıradaki oyuncu hazırlanıyor.";
+
+      clearInterval(countdownTimer);
+
+    }
+
+  },250);
+
+}
+
+// ==========================================
+
+// LEVEL GENERATION
+
+// ==========================================
+
+function generateLevel(level) {
+
+  const rand=randomSeed(
+
+    CONFIG.LEVEL_SEED*level
+
+  );
+
+  levelPlatforms=[];
+
+  levelTraps=[];
+
+  const floor=canvas.height*CONFIG.FLOOR_Y;
+
+  levelPlatforms.push({
+
+    x:0,
+
+    y:floor,
+
+    w:CONFIG.WORLD_WIDTH,
+
+    h:60
+
+  });
+
+  const obstacleCount=4+level;
+
+  let lastX=280;
+
+  for(let i=0;i<obstacleCount;i++) {
+
+    const x=lastX+230+rand()*180;
+
+    const width=100+rand()*100;
+
+    const y=floor-(65+rand()*120);
+
+    levelPlatforms.push({
+
+      x:x,
+
+      y:y,
+
+      w:width,
+
+      h:16
+
+    });
+
+    levelTraps.push({
+
+      x:x+width+30,
+
+      y:floor-22,
+
+      w:30+rand()*25,
+
+      h:22
+
+    });
+
+    lastX=x;
+
+  }
+
+  portal={
+
+    x:CONFIG.WORLD_WIDTH-180,
+
+    y:floor-110,
+
+    w:60,
+
+    h:110
+
+  };
+
+  player.x=gameState.x||60;
+
+}
+
+// ==========================================
+
+// CANVAS
+
+// ==========================================
+
+function resizeCanvas() {
+
+  const rect=canvas.getBoundingClientRect();
+
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+
+  canvas.width=rect.width*dpr;
+
+  canvas.height=rect.height*dpr;
+
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  if(myTurn) generateLevel(gameState.level||1);
+
+}
+
+window.addEventListener("resize",resizeCanvas);
+
+function drawBackground(w,h) {
+
+  const gradient=ctx.createLinearGradient(0,0,0,h);
+
+  gradient.addColorStop(0,"#100b25");
+
+  gradient.addColorStop(1,"#21132f");
+
+  ctx.fillStyle=gradient;
+
+  ctx.fillRect(0,0,w,h);
+
+  // Stars
+
+  for(let i=0;i<65;i++) {
+
+    const x=(i*173-camera.x*.12)%w;
+
+    const y=(i*83)%Math.max(1,h*.55);
+
+    ctx.fillStyle="#ffffff66";
+
+    ctx.fillRect(x,y,2,2);
+
+  }
+
+  // Distant hills
+
+  for(let layer=0;layer<2;layer++) {
+
+    ctx.beginPath();
+
+    const offset=camera.x*(.1+layer*.12);
+
+    ctx.moveTo(0,h);
+
+    for(let x=0;x<=w+20;x+=20) {
+
+      const y=
+
+        h*.65+
+
+        Math.sin((x+offset)*.008+layer)*30+
+
+        Math.cos((x+offset)*.015)*15;
+
+      ctx.lineTo(x,y);
+
+    }
+
+    ctx.lineTo(w,h);
+
+    ctx.fillStyle=layer===0?"#261735":"#1a112b";
+
+    ctx.fill();
+
+  }
+
+  // Fog
+
+  const fog=ctx.createLinearGradient(0,h*.6,0,h);
+
+  fog.addColorStop(0,"transparent");
+
+  fog.addColorStop(1,"#a855f722");
+
+  ctx.fillStyle=fog;
+
+  ctx.fillRect(0,h*.6,w,h*.4);
+
+}
+
+function drawPlayer(x,y,alpha=1,ghost=false) {
+
+  ctx.save();
+
+  ctx.globalAlpha=alpha;
+
+  const sx=x-camera.x;
+
+  // Shadow
+
+  ctx.fillStyle="#0008";
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+
+    sx+14,y+39,15,4,0,0,Math.PI*2
+
+  );
+
+  ctx.fill();
+
+  // Body
+
+  ctx.fillStyle=ghost?"#8be9fd":"#a855f7";
+
+  ctx.fillRect(sx+5,y+12,19,23);
+
+  // Head
+
+  ctx.fillStyle=ghost?"#b7f4ff":"#e8d5ff";
+
+  ctx.fillRect(sx+7,y,16,14);
+
+  // Eyes
+
+  ctx.fillStyle="#171127";
+
+  ctx.fillRect(sx+17,y+5,3,3);
+
+  // Cloak
+
+  ctx.fillStyle=ghost?"#8be9fd88":"#60248f";
+
+  ctx.beginPath();
+
+  ctx.moveTo(sx+5,y+15);
+
+  ctx.lineTo(sx-2,y+35);
+
+  ctx.lineTo(sx+26,y+35);
+
+  ctx.lineTo(sx+24,y+15);
+
+  ctx.fill();
+
+  ctx.restore();
+
+}
+
+function drawGraves() {
+
+  graves.forEach(g=>{
+
+    if(g.level!==(gameState.level||1)) return;
+
+    const x=g.x-camera.x;
+
+    const y=g.y;
+
+    if(x<-100 || x>canvas.clientWidth+100) return;
+
+    // Gravestone
+
+    ctx.fillStyle="#777184";
+
+    ctx.beginPath();
+
+    ctx.roundRect(x,y-35,30,38,7);
+
+    ctx.fill();
+
+    ctx.fillStyle="#aaa3b7";
+
+    ctx.fillRect(x+5,y-30,20,3);
+
+    ctx.fillStyle="#4ade80";
+
+    ctx.fillRect(x+13,y-22,4,12);
+
+    // Soul particles
+
+    if(Math.random()<.08) {
+
+      particles.push({
+
+        x:g.x+15,
+
+        y:y-35,
+
+        vx:(Math.random()-.5)*.5,
+
+        vy:-Math.random()*.8,
+
+        life:50,
+
+        color:"#4ade80"
+
+      });
+
+    }
+
+  });
+
+}
+
+function drawPlatforms() {
+
+  levelPlatforms.forEach(p=>{
+
+    const x=p.x-camera.x;
+
+    ctx.fillStyle="#42304c";
+
+    ctx.fillRect(x,p.y,p.w,p.h);
+
+    ctx.fillStyle="#a855f7";
+
+    ctx.fillRect(x,p.y,p.w,4);
+
+    ctx.fillStyle="#21152c";
+
+    for(let i=0;i<p.w;i+=30) {
+
+      ctx.fillRect(x+i,p.y+10,15,5);
+
+    }
+
+  });
+
+}
+
+function drawTraps() {
+
+  levelTraps.forEach(t=>{
+
+    const x=t.x-camera.x;
+
+    ctx.fillStyle="#ef4444";
+
+    ctx.beginPath();
+
+    const count=Math.ceil(t.w/15);
+
+    for(let i=0;i<count;i++) {
+
+      ctx.moveTo(x+i*15,t.y+t.h);
+
+      ctx.lineTo(x+i*15+8,t.y);
+
+      ctx.lineTo(x+i*15+15,t.y+t.h);
+
+    }
+
+    ctx.fill();
+
+  });
+
+}
+
+function drawPortal() {
+
+  if(!portal) return;
+
+  const x=portal.x-camera.x;
+
+  ctx.save();
+
+  ctx.shadowColor="#a855f7";
+
+  ctx.shadowBlur=25;
+
+  ctx.strokeStyle="#c084fc";
+
+  ctx.lineWidth=5;
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+
+    x+30,
+
+    portal.y+55,
+
+    27,
+
+    50,
+
+    0,
+
+    0,
+
+    Math.PI*2
+
+  );
+
+  ctx.stroke();
+
+  ctx.restore();
+
+}
+
+function drawParticles() {
+
+  particles.forEach(p=>{
+
+    ctx.globalAlpha=Math.max(0,p.life/50);
+
+    ctx.fillStyle=p.color;
+
+    ctx.fillRect(
+
+      p.x-camera.x,
+
+      p.y,
+
+      4,
+
+      4
+
+    );
+
+    p.x+=p.vx;
+
+    p.y+=p.vy;
+
+    p.life--;
+
+  });
+
+  ctx.globalAlpha=1;
+
+  particles=particles.filter(p=>p.life>0);
+
+}
+
+// ==========================================
+
+// PHYSICS
+
+// ==========================================
+
+function spawnParticles(x,y,color="#c084fc") {
+
+  for(let i=0;i<9;i++) {
+
+    particles.push({
+
+      x,
+
+      y,
+
+      vx:(Math.random()-.5)*4,
+
+      vy:-Math.random()*4,
+
+      life:35,
+
+      color
+
+    });
+
+  }
+
+}
+
+function collide(a,b) {
+
+  return a.x<b.x+b.w &&
+
+         a.x+a.w>b.x &&
+
+         a.y<b.y+b.h &&
+
+         a.y+a.h>b.y;
+
+}
+
+function updatePhysics() {
+
+  if(!myTurn || !playing || dead) return;
+
+  const w=canvas.clientWidth;
+
+  const h=canvas.clientHeight;
+
+  const oldY=player.y;
+
+  player.vx=0;
+
+  if(input.left) {
+
+    player.vx=-CONFIG.SPEED;
+
+    player.facing=-1;
+
+  }
+
+  if(input.right) {
+
+    player.vx=CONFIG.SPEED;
+
+    player.facing=1;
+
+  }
+
+  if(input.jump && player.onGround) {
+
+    player.vy=CONFIG.JUMP;
+
+    player.onGround=false;
+
+    spawnParticles(player.x+14,player.y+35);
+
+  }
+
+  input.jump=false;
+
+  player.x+=player.vx;
+
+  player.vy+=CONFIG.GRAVITY;
+
+  player.y+=player.vy;
+
+  player.onGround=false;
+
+  const rect={
+
+    x:player.x,
+
+    y:player.y,
+
+    w:CONFIG.PLAYER_WIDTH,
+
+    h:CONFIG.PLAYER_HEIGHT
+
+  };
+
+  levelPlatforms.forEach(p=>{
+
+    if(collide(rect,p) && oldY+CONFIG.PLAYER_HEIGHT<=p.y+12 && player.vy>=0) {
+
+      player.y=p.y-CONFIG.PLAYER_HEIGHT;
+
+      player.vy=0;
+
+      player.onGround=true;
+
+    }
+
+  });
+
+  if(player.x<0) player.x=0;
+
+  // Camera
+
+  camera.x=Math.max(
+
+    0,
+
+    Math.min(
+
+      CONFIG.WORLD_WIDTH-w,
+
+      player.x-w*.35
+
+    )
+
+  );
+
+  // Traps
+
+  levelTraps.forEach(t=>{
+
+    if(collide(rect,t)) {
+
+      die();
+
+    }
+
+  });
+
+  // Portal
+
+  if(portal && collide(rect,portal)) {
+
+    nextLevel();
+
+  }
+
+  // Falling
+
+  if(player.y>h+100) {
+
+    die();
+
+  }
+
+  player.frame++;
+
+}
+
+// ==========================================
+
+// DEATH
+
+// ==========================================
+
+async function die() {
+
+  if(dead || !myTurn) return;
+
+  dead=true;
+
+  playing=false;
+
+  screenShake=15;
+
+  spawnParticles(
+
+    player.x,
+
+    player.y,
+
+    "#fb4444"
+
+  );
+
+  try {
+
+    const graveRef=await addDoc(
+
+      collection(db,"graves"),
+
+      {
+
+        level:gameState.level,
+
+        x:player.x,
+
+        y:player.y,
+
+        userId:currentUser.uid,
+
+        createdAt:serverTimestamp()
+
+      }
+
+    );
+
+    // Mezarlık kaydı kalıcıdır.
+
+    // Hiçbir silme işlemi yapılmaz.
+
+    const stateRef=doc(db,"gameState","current");
+
+    await runTransaction(db,async tx=>{
+
+      const snap=await tx.get(stateRef);
+
+      if(!snap.exists()) return;
+
+      const state=snap.data();
+
+      if(state.currentUserId!==currentUser.uid ||
+
+         state.currentEntryId!==currentEntry.id) return;
+
+      tx.update(stateRef,{
+
+        x:60,
+
+        y:0,
+
+        currentUserId:null,
+
+        currentEntryId:null,
+
+        turnEndsAt:null,
+
+        updatedAt:serverTimestamp()
+
+      });
+
+    });
+
+    await finishEntry("DONE");
+
+    toast("Bir mezar daha oluştu...");
+
+    showDeathScreen();
+
+  } catch(e) {
+
+    toast("Ölüm kaydı başarısız: "+e.message);
+
+  }
+
+}
+
+function showDeathScreen() {
+
+  const overlay=document.createElement("div");
+
+  overlay.id="deathOverlay";
+
+  overlay.innerHTML=`
+
+    <div class="panel">
+
+      <div class="logo pixel" style="color:#fb4444">
+
+        YOU DIED
+
+      </div>
+
+      <div class="subtitle">
+
+        Dünya bir mezar daha kazandı.
+
+      </div>
+
+      <button class="btn secondary" id="deathContinue">
+
+        SIRADAKİ OYUNCUYU BEKLE
+
+      </button>
+
+    </div>
+
+  `;
+
+  document.body.appendChild(overlay);
+
+  $("deathContinue").onclick=()=>{
+
+    overlay.remove();
+
+    myTurn=false;
+
+    showScreen("lobbyScreen");
+
+    startQueue();
+
+  };
+
+}
+
+// ==========================================
+
+// NEXT LEVEL
+
+// ==========================================
+
+async function nextLevel() {
+
+  if(!myTurn || completed) return;
+
+  completed=true;
+
+  spawnParticles(
+
+    player.x,
+
+    player.y,
+
+    "#fbbf24"
+
+  );
+
+  const stateRef=doc(db,"gameState","current");
+
+  try {
+
+    await runTransaction(db,async tx=>{
+
+      const snap=await tx.get(stateRef);
+
+      if(!snap.exists()) return;
+
+      const state=snap.data();
+
+      if(state.currentUserId!==currentUser.uid ||
+
+         state.currentEntryId!==currentEntry.id) return;
+
+      tx.update(stateRef,{
+
+        level:(state.level||1)+1,
+
+        x:60,
+
+        y:0,
+
+        updatedAt:serverTimestamp()
+
+      });
+
+    });
+
+    gameState.level++;
+
+    await savePosition();
+
+    completed=false;
+
+    generateLevel(gameState.level);
+
+    player.x=60;
+
+    player.y=0;
+
+    toast("BÖLÜM TAMAMLANDI!");
+
+  } catch(e) {
+
+    completed=false;
+
+    toast("Bölüm geçişi başarısız.");
+
+  }
+
+}
+
+// ==========================================
+
+// SAVE POSITION
+
+// ==========================================
+
+let lastSave=0;
+
+async function savePosition() {
+
+  if(!currentUser || !currentEntry) return;
+
+  const now=Date.now();
+
+  if(now-lastSave<1000) return;
+
+  lastSave=now;
+
+  const stateRef=doc(db,"gameState","current");
+
+  try {
+
+    await runTransaction(db,async tx=>{
+
+      const snap=await tx.get(stateRef);
+
+      if(!snap.exists()) return;
+
+      const state=snap.data();
+
+      if(state.currentUserId!==currentUser.uid ||
+
+         state.currentEntryId!==currentEntry.id) return;
+
+      tx.update(stateRef,{
+
+        x:player.x,
+
+        y:player.y,
+
+        updatedAt:serverTimestamp()
+
+      });
+
+    });
+
+  } catch(e) {
+
+    console.error("Position save:",e);
+
+  }
+
+}
+
+// ==========================================
+
+// FINISH ENTRY
+
+// ==========================================
+
+async function finishEntry(status) {
+
+  if(!currentEntry) return;
+
+  try {
+
+    const entryRef=doc(
+
+      db,"entries",currentEntry.id
+
+    );
+
+    const stateRef=doc(db,"gameState","current");
+
+    await runTransaction(db,async tx=>{
+
+      const entrySnap=await tx.get(entryRef);
+
+      const stateSnap=await tx.get(stateRef);
+
+      if(entrySnap.exists()) {
+
+        tx.update(entryRef,{
+
+          status
+
+        });
+
+      }
+
+      if(stateSnap.exists()) {
+
+        const state=stateSnap.data();
+
+        if(state.currentEntryId===currentEntry.id &&
+
+           state.currentUserId===currentUser.uid) {
+
+          tx.update(stateRef,{
+
+            currentUserId:null,
+
+            currentEntryId:null,
+
+            turnEndsAt:null,
+
+            updatedAt:serverTimestamp()
+
+          });
+
+        }
+
+      }
+
+    });
+
+  } catch(e) {
+
+    console.error("Finish:",e);
+
+  }
+
+}
+
+// ==========================================
+
+// HUD
+
+// ==========================================
+
+function updateGameHUD() {
+
+  $("levelText").textContent=gameState.level||1;
+
+  const position=getQueuePosition();
+
+  $("positionText").textContent=position||"-";
+
+  if(myTurn) {
+
+    $("turnText").textContent="SENİN";
+
+    $("overlayTitle").textContent="SENİN TURUN";
+
+    $("overlayDescription").textContent=
+
+      "Dünyayı keşfet.";
+
+  } else {
+
+    $("turnText").textContent="BEKLE";
+
+    $("overlayTitle").textContent="BEKLENİYOR";
+
+    const waiting=entries.filter(e=>
+
+      e.status==="QUEUED"
+
+    ).length;
+
+    $("overlayDescription").textContent=
+
+      waiting+" kişi sırada bekliyor.";
+
+  }
+
+}
+
+// ==========================================
+
+// LEADERBOARD
+
+// ==========================================
+
+async function loadLeaderboard() {
+
+  try {
+
+    const q=query(
+
+      collection(db,"entries"),
+
+      where("day","==",today()),
+
+      orderBy("paidAt","asc"),
+
+      limit(5)
+
+    );
+
+    const snap=await getDocs(q);
+
+    const list=$("leaderboard");
+
+    list.innerHTML="";
+
+    if(snap.empty) {
+
+      list.innerHTML=
+
+        '<div class="leader-row">Henüz oyuncu yok</div>';
+
+      return;
+
+    }
+
+    snap.docs.forEach((d,i)=>{
+
+      const data=d.data();
+
+      const row=document.createElement("div");
+
+      row.className="leader-row";
+
+      const name=document.createElement("span");
+
+      name.textContent=
+
+        `${i+1}. ${data.displayName||"Gezgin"}`;
+
+      const level=document.createElement("span");
+
+      level.textContent=
+
+        `BÖLÜM ${data.bestLevel||1}`;
+
+      row.append(name,level);
+
+      list.appendChild(row);
+
+    });
+
+  } catch(e) {
+
+    console.error("Leaderboard:",e);
+
+  }
+
+}
+
+// ==========================================
+
+// GHOST SYSTEM
+
+// ==========================================
+
+let ghostUnsubscribe=null;
+
+function subscribeGhost() {
+
+  if(ghostUnsubscribe) {
+
+    ghostUnsubscribe();
+
+  }
+
+  ghostUnsubscribe=onSnapshot(
+
+    doc(db,"gameState","current"),
+
+    snap=>{
+
+      if(!snap.exists()) return;
+
+      const state=snap.data();
+
+      if(state.currentUserId &&
+
+         state.currentUserId!==currentUser.uid) {
+
+        activeGhost={
+
+          x:state.x||0,
+
+          y:state.y||0,
+
+          userId:state.currentUserId
+
+        };
+
+      } else {
+
+        activeGhost=null;
+
+      }
+
+    }
+
+  );
+
+}
+
+function startGhost() {
+
+  subscribeGhost();
+
+}
+
+const oldSubscribeWorld=subscribeWorld;
+
+// ==========================================
+
+// INPUT
+
+// ==========================================
+
+window.addEventListener("keydown",e=>{
+
+  if(["ArrowLeft","ArrowRight","ArrowUp"," "].includes(e.key)) {
+
+    e.preventDefault();
+
+  }
+
+  if(e.key==="ArrowLeft" || e.key==="a") {
+
+    input.left=true;
+
+  }
+
+  if(e.key==="ArrowRight" || e.key==="d") {
+
+    input.right=true;
+
+  }
+
+  if(e.key==="ArrowUp" || e.key===" " || e.key==="w") {
+
+    input.jump=true;
+
+  }
+
+});
+
+window.addEventListener("keyup",e=>{
+
+  if(e.key==="ArrowLeft" || e.key==="a") {
+
+    input.left=false;
+
+  }
+
+  if(e.key==="ArrowRight" || e.key==="d") {
+
+    input.right=false;
+
+  }
+
+});
+
+function bindHold(id,key) {
+
+  const btn=$(id);
+
+  btn.addEventListener("pointerdown",e=>{
+
+    e.preventDefault();
+
+    input[key]=true;
+
+    btn.setPointerCapture(e.pointerId);
+
+  });
+
+  const release=()=>input[key]=false;
+
+  btn.addEventListener("pointerup",release);
+
+  btn.addEventListener("pointercancel",release);
+
+  btn.addEventListener("lostpointercapture",release);
+
+}
+
+bindHold("leftBtn","left");
+
+bindHold("rightBtn","right");
+
+$("jumpBtn").addEventListener("pointerdown",e=>{
+
+  e.preventDefault();
+
+  input.jump=true;
+
+});
+
+// ==========================================
+
+// MAIN GAME LOOP
+
+// ==========================================
+
+function loop() {
+
+  requestAnimationFrame(loop);
+
+  if($("gameScreen").classList.contains("hidden")) {
+
+    return;
+
+  }
+
+  const w=canvas.clientWidth;
+
+  const h=canvas.clientHeight;
+
+  if(!w || !h) return;
+
+  if(screenShake>0) {
+
+    ctx.save();
+
+    ctx.translate(
+
+      (Math.random()-.5)*screenShake,
+
+      (Math.random()-.5)*screenShake
+
+    );
+
+    screenShake*=.85;
+
+  }
+
+  drawBackground(w,h);
+
+  if(!levelPlatforms.length) {
+
+    generateLevel(gameState.level||1);
+
+  }
+
+  if(myTurn) {
+
+    updatePhysics();
+
+  }
+
+  drawPlatforms();
+
+  drawTraps();
+
+  drawPortal();
+
+  drawGraves();
+
+  if(activeGhost && !myTurn) {
+
+    drawPlayer(
+
+      activeGhost.x,
+
+      activeGhost.y,
+
+      .35,
+
+      true
+
+    );
+
+  }
+
+  drawPlayer(
+
+    player.x,
+
+    player.y,
+
+    1,
+
+    false
+
+  );
+
+  drawParticles();
+
+  if(screenShake>0) ctx.restore();
+
+  if(myTurn && Date.now()-lastSave>1500) {
+
+    savePosition();
+
+  }
+
+}
+
+requestAnimationFrame(loop);
+
+// ==========================================
+
+// INITIALIZATION
+
+// ==========================================
+
+if(firebaseConfigured) {
+
+  try {
+
+    const stateRef=doc(db,"gameState","current");
+
+    const snap=await getDoc(stateRef);
+
+    if(!snap.exists()) {
+
+      // İlk dünya oluşturulması.
+
+      // Bu işlem ilk kurulumda yetkili hesapla yapılmalıdır.
+
+      await runTransaction(db,async tx=>{
+
+        const current=await tx.get(stateRef);
+
+        if(current.exists()) return;
+
+        tx.set(stateRef,{
+
+          level:1,
+
+          x:60,
+
+          y:0,
+
+          currentUserId:null,
+
+          currentEntryId:null,
+
+          turnEndsAt:null,
+
+          updatedAt:serverTimestamp()
+
+        });
+
+      });
+
+    }
+
+  } catch(e) {
+
+    console.warn("World initialization:",e.message);
+
+  }
+
+  startGhost();
+
+}
+
+</script>
+
+</body>
+
+</html>
