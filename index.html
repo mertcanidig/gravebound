@@ -1227,13 +1227,8 @@ if(firebaseConfigured) {
 
 function isWindowOpen() {
 
-  const now=new Date();
-
-  const hour=now.getHours();
-
-  return hour>=CONFIG.WINDOW_START_HOUR &&
-
-         hour<CONFIG.WINDOW_END_HOUR;
+  // TEST MODE: 17:00–20:00 restriction temporarily disabled.
+  return true;
 
 }
 
@@ -1281,7 +1276,7 @@ function updateWindow() {
 
     $("windowMessage").textContent=
 
-      "✦ KAPI AÇIK — 20:00'DE KAPANIR ✦";
+      "✦ TEST MODU — KAPI 24 SAAT AÇIK ✦";
 
   } else {
 
