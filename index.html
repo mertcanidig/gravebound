@@ -370,6 +370,15 @@ input:focus {
 
 }
 
+.adventure-stats {
+  min-height:34px; flex-shrink:0; display:flex; align-items:center;
+  justify-content:space-around; gap:8px; padding:4px 10px;
+  background:#1b1229; border-bottom:1px solid #392850;
+  color:#c4b5d8; font-size:17px;
+}
+.adventure-stats b { color:#fbbf24; }
+.adventure-stats #healthText { color:#fb7185; letter-spacing:2px; }
+.adventure-stats .objective { color:#c4b5fd; font-size:15px; }
 #gameCanvas {
 
   display:block;
@@ -436,6 +445,7 @@ input:focus {
 
 }
 
+.game-hint { flex-shrink:0; text-align:center; padding:3px 6px 6px; background:#130e20; color:#9c8ab4; font-size:14px; }
 #turnOverlay {
 
   position:absolute;
@@ -726,6 +736,11 @@ input:focus {
 
   </div>
 
+  <div class="adventure-stats" aria-live="polite">
+    <span>♥ <b id="healthText">♥ ♥ ♥</b></span>
+    <span>✧ RUH <b id="soulText">0</b></span>
+    <span class="objective" id="objectiveText">Kapıya ulaş!</span>
+  </div>
   <canvas id="gameCanvas" aria-label="GRAVEBOUND oyun alanı"></canvas>
 
   <div id="turnOverlay">
@@ -746,9 +761,9 @@ input:focus {
 
     <button class="control" id="rightBtn" aria-label="Sağa git">▶</button>
 
-    <button class="control jump" id="jumpBtn" aria-label="Zıpla">JUMP</button>
-
+    <button class="control jump" id="jumpBtn" aria-label="Zıpla">ZıPLA</button>
   </div>
+  <div class="game-hint">Ruh kristallerini topla ✧ • Gölge yaratıklarından ve dikenlerden kaç • Mor kapıya ulaş</div>
 
 </section>
 
@@ -943,8 +958,15 @@ let toastTimer=null;
 let levelPlatforms=[];
 
 let levelTraps=[];
-
+let levelSouls=[];
+let levelEnemies=[];
 let portal=null;
+let playerHealth=3;
+let soulCount=0;
+let damageCooldown=0;
+let lastDamageAt=0;
+let checkpointX=60;
+let deathReason="karanlıkta kayboldu";
 
 const canvas=document.getElementById("gameCanvas");
 
@@ -1779,6 +1801,11 @@ function activateTurn(state) {
   playing=true;
 
   dead=false;
+  playerHealth=3;
+  soulCount=0;
+  damageCooldown=0;
+  checkpointX=60;
+  updateAdventureHUD();
 
   gameState=state;
 
@@ -1790,6 +1817,8 @@ function activateTurn(state) {
 
   player.vy=0;
 
+  showScreen("gameScreen");
+  resizeCanvas();
   generateLevel(state.level||1);
 
   showScreen("gameScreen");
@@ -1851,85 +1880,39 @@ function startTurnClock() {
 // ==========================================
 
 function generateLevel(level) {
-
-  const rand=randomSeed(
-
-    CONFIG.LEVEL_SEED*level
-
-  );
-
-  levelPlatforms=[];
-
-  levelTraps=[];
-
-  const floor=canvas.height*CONFIG.FLOOR_Y;
-
-  levelPlatforms.push({
-
-    x:0,
-
-    y:floor,
-
-    w:CONFIG.WORLD_WIDTH,
-
-    h:60
-
-  });
-
-  const obstacleCount=4+level;
-
-  let lastX=280;
-
+  const rand=randomSeed(CONFIG.LEVEL_SEED*level);
+  levelPlatforms=[]; levelTraps=[]; levelSouls=[]; levelEnemies=[];
+  const floor=canvas.clientHeight*CONFIG.FLOOR_Y;
+  levelPlatforms.push({x:0,y:floor,w:CONFIG.WORLD_WIDTH,h:70});
+  const obstacleCount=5+Math.min(level,7);
+  let lastX=220;
   for(let i=0;i<obstacleCount;i++) {
-
-    const x=lastX+230+rand()*180;
-
-    const width=100+rand()*100;
-
-    const y=floor-(65+rand()*120);
-
-    levelPlatforms.push({
-
-      x:x,
-
-      y:y,
-
-      w:width,
-
-      h:16
-
-    });
-
-    levelTraps.push({
-
-      x:x+width+30,
-
-      y:floor-22,
-
-      w:30+rand()*25,
-
-      h:22
-
-    });
-
+    const gap=170+rand()*75;
+    const x=lastX+gap;
+    const width=105+rand()*85;
+    const y=floor-(70+rand()*105);
+    levelPlatforms.push({x,y,w:width,h:16});
+    // Floor spikes and a small soul reward on/near each platform.
+    levelTraps.push({x:x+width+28,y:floor-22,w:28+rand()*28,h:22});
+    levelSouls.push({x:x+width*.5,y:y-32,r:9,taken:false});
+    if(i%2===1) levelEnemies.push({x:x+width+75,y:floor-34,w:27,h:30,min:x+width+35,max:x+width+150,dir:1,speed:0.8+rand()*.45,alive:true});
     lastX=x;
-
   }
-
-  portal={
-
-    x:CONFIG.WORLD_WIDTH-180,
-
-    y:floor-110,
-
-    w:60,
-
-    h:110
-
-  };
-
+  // Additional souls reward exploration and jumping.
+  for(let i=0;i<8;i++) {
+    const x=480+i*500+rand()*180;
+    levelSouls.push({x,y:floor-75-rand()*70,r:9,taken:false});
+  }
+  portal={x:CONFIG.WORLD_WIDTH-180,y:floor-110,w:60,h:110};
   player.x=gameState.x||60;
+  updateAdventureHUD();
+}
 
+function updateAdventureHUD() {
+  const health=$("healthText"), souls=$("soulText"), objective=$("objectiveText");
+  if(health) health.textContent="♥ ".repeat(Math.max(0,playerHealth))+("♡ ".repeat(Math.max(0,3-playerHealth))).trim();
+  if(souls) souls.textContent=String(soulCount);
+  if(objective) objective.textContent=`Bölüm ${gameState.level||1}: Kapıyı bul`;
 }
 
 // ==========================================
@@ -2198,6 +2181,28 @@ function drawTraps() {
 
 }
 
+function drawSouls() {
+  levelSouls.forEach(s=>{
+    if(s.taken) return;
+    const x=s.x-camera.x, pulse=1+Math.sin(Date.now()/180+s.x)*.18;
+    ctx.save(); ctx.translate(x,s.y); ctx.rotate(Math.PI/4);
+    ctx.shadowColor="#67e8f9"; ctx.shadowBlur=18;
+    ctx.fillStyle="#67e8f9"; ctx.fillRect(-s.r*pulse,-s.r*pulse,s.r*2*pulse,s.r*2*pulse);
+    ctx.restore();
+  });
+}
+
+function drawEnemies() {
+  levelEnemies.forEach(e=>{
+    if(!e.alive) return;
+    const x=e.x-camera.x, bob=Math.sin(Date.now()/110+e.x)*2;
+    ctx.fillStyle="#080611"; ctx.fillRect(x+3,e.y+8+bob,22,22);
+    ctx.fillStyle="#6b263d"; ctx.fillRect(x+1,e.y+13+bob,25,17);
+    ctx.fillStyle="#fb7185"; ctx.fillRect(x+7,e.y+8+bob,4,4); ctx.fillRect(x+17,e.y+8+bob,4,4);
+    ctx.fillStyle="#d1a4ad"; ctx.fillRect(x+6,e.y+27+bob,5,5); ctx.fillRect(x+17,e.y+27+bob,5,5);
+  });
+}
+
 function drawPortal() {
 
   if(!portal) return;
@@ -2314,6 +2319,18 @@ function collide(a,b) {
 
          a.y+a.h>b.y;
 
+}
+
+function damagePlayer(reason="bir tuzağa yakalandın") {
+  const now=Date.now();
+  if(now<damageCooldown || !myTurn || dead) return;
+  playerHealth--; damageCooldown=now+1200; deathReason=reason; screenShake=10;
+  spawnParticles(player.x+14,player.y+18,"#fb7185");
+  updateAdventureHUD();
+  if(playerHealth<=0) { die(); return; }
+  // Short knockback and respawn at the latest safe checkpoint.
+  player.vy=-5; player.x=Math.max(checkpointX,player.x-55); player.y=Math.min(player.y,canvas.clientHeight*.55);
+  toast(`Darbe aldın! Kalan can: ${playerHealth}`);
 }
 
 function updatePhysics() {
@@ -2457,13 +2474,7 @@ async function die() {
   screenShake=15;
 
   spawnParticles(
-
-    player.x,
-
-    player.y,
-
-    "#fb4444"
-
+    player.x, player.y, "#fb4444"
   );
 
   try {
@@ -2555,9 +2566,7 @@ function showDeathScreen() {
       </div>
 
       <div class="subtitle">
-
-        Dünya bir mezar daha kazandı.
-
+        ${deathReason}. Topladığın ruh: ${soulCount}. Dünya bir mezar daha kazandı.
       </div>
 
       <button class="btn secondary" id="deathContinue">
@@ -2639,12 +2648,14 @@ async function nextLevel() {
     });
 
     gameState.level++;
-
+    playerHealth=Math.min(3,playerHealth+1);
+    checkpointX=60;
     await savePosition();
 
     completed=false;
 
     generateLevel(gameState.level);
+    updateAdventureHUD();
 
     player.x=60;
 
@@ -3101,9 +3112,9 @@ function loop() {
   }
 
   drawPlatforms();
-
+  drawSouls();
+  drawEnemies();
   drawTraps();
-
   drawPortal();
 
   drawGraves();
@@ -3125,15 +3136,9 @@ function loop() {
   }
 
   drawPlayer(
-
-    player.x,
-
-    player.y,
-
-    1,
-
+    player.x, player.y,
+    (Date.now()<damageCooldown && Math.floor(Date.now()/90)%2===0)?.35:1,
     false
-
   );
 
   drawParticles();
