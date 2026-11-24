@@ -1,375 +1,189 @@
 <!DOCTYPE html>
-
 <html lang="tr">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-
 <meta name="theme-color" content="#0d0a1a">
-
 <title>GRAVEBOUND — The Last Journey</title>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
-
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
-
 <style>
-
 /* ==============================
-
    GRAVEBOUND - DESIGN SYSTEM
-
 ============================== */
-
 :root {
-
   --bg:#0d0a1a;
-
   --panel:#171127;
-
   --panel2:#211735;
-
   --purple:#a855f7;
-
   --purple2:#7e22ce;
-
   --green:#4ade80;
-
   --red:#fb4444;
-
   --gold:#fbbf24;
-
   --text:#eee7ff;
-
   --muted:#9588aa;
-
   --border:#392850;
-
 }
-
 * {
-
   box-sizing:border-box;
-
   -webkit-tap-highlight-color:transparent;
-
 }
-
 body {
-
   margin:0;
-
   background:var(--bg);
-
   color:var(--text);
-
   font-family:'VT323',monospace;
-
   font-size:23px;
-
   min-height:100vh;
-
   overflow-x:hidden;
-
 }
-
 button,input {
-
   font-family:inherit;
-
 }
-
 button {
-
   cursor:pointer;
-
 }
-
 .hidden {
-
   display:none!important;
-
 }
-
 .pixel {
-
   font-family:'Press Start 2P',monospace;
-
 }
-
 #app {
-
   min-height:100vh;
-
   position:relative;
-
   overflow:hidden;
-
 }
-
 .screen {
-
   width:100%;
-
   min-height:100vh;
-
   padding:25px 16px;
-
   display:flex;
-
   justify-content:center;
-
   align-items:center;
-
 }
-
 .panel {
-
   width:min(100%,480px);
-
   background:linear-gradient(145deg,#211735,#130f20);
-
   border:1px solid var(--border);
-
   border-radius:15px;
-
   padding:25px;
-
   box-shadow:0 15px 50px #0008;
-
 }
-
 .logo {
-
   text-align:center;
-
   color:var(--purple);
-
   font-size:clamp(23px,5vw,34px);
-
   text-shadow:0 0 20px #a855f780;
-
   line-height:1.6;
-
 }
-
 .subtitle {
-
   color:var(--muted);
-
   text-align:center;
-
   margin:10px 0 25px;
-
 }
-
 input {
-
   width:100%;
-
   padding:14px;
-
   margin:7px 0;
-
   border:1px solid var(--border);
-
   border-radius:8px;
-
   color:white;
-
   background:#0d0a1a;
-
   font-size:22px;
-
   outline:none;
-
 }
-
 input:focus {
-
   border-color:var(--purple);
-
 }
-
 .btn {
-
   display:block;
-
   width:100%;
-
   padding:15px;
-
   margin-top:12px;
-
   border:1px solid #bd7bff;
-
   border-radius:8px;
-
   background:linear-gradient(120deg,#9333ea,#6b21a8);
-
   color:white;
-
   font-size:24px;
-
   transition:.2s;
-
 }
-
 .btn:hover {
-
   box-shadow:0 0 25px #a855f780;
-
   transform:translateY(-2px);
-
 }
-
 .btn:disabled {
-
   opacity:.35;
-
   cursor:not-allowed;
-
   transform:none;
-
   box-shadow:none;
-
 }
-
 .btn.secondary {
-
   background:#211735;
-
   border-color:var(--border);
-
 }
-
 .btn.gold {
-
   background:linear-gradient(120deg,#b7791f,#854d0e);
-
   border-color:var(--gold);
-
 }
-
 .small {
-
   font-size:17px;
-
   color:var(--muted);
-
   text-align:center;
-
   margin-top:15px;
-
 }
-
 .status {
-
   text-align:center;
-
   color:var(--green);
-
   margin:15px 0;
-
 }
-
 .section-title {
-
   color:var(--gold);
-
   font-size:19px;
-
   text-align:center;
-
   margin:20px 0;
-
 }
-
 #leaderboard {
-
   border-top:1px solid var(--border);
-
   padding-top:12px;
-
 }
-
 .leader-row {
-
   display:flex;
-
   justify-content:space-between;
-
   padding:7px;
-
   border-bottom:1px solid #ffffff0b;
-
 }
-
 /* ==============================
-
    GAME
-
 ============================== */
-
 #gameScreen {
-
   padding:0;
-
   align-items:stretch;
-
   flex-direction:column;
-
   height:100dvh;
-
   min-height:450px;
-
 }
-
 .hud {
-
   height:65px;
-
   display:flex;
-
   align-items:center;
-
   justify-content:space-around;
-
   gap:5px;
-
   background:#130e20;
-
   border-bottom:1px solid var(--border);
-
   flex-shrink:0;
-
   z-index:5;
-
 }
-
 .hud-item {
-
   text-align:center;
-
   font-size:19px;
-
   color:var(--green);
-
 }
-
 .hud-item small {
-
   display:block;
-
   font-size:13px;
-
   color:var(--muted);
-
 }
-
 .adventure-stats {
   min-height:34px; flex-shrink:0; display:flex; align-items:center;
   justify-content:space-around; gap:8px; padding:4px 10px;
@@ -380,583 +194,309 @@ input:focus {
 .adventure-stats #healthText { color:#fb7185; letter-spacing:2px; }
 .adventure-stats .objective { color:#c4b5fd; font-size:15px; }
 #gameCanvas {
-
   display:block;
-
   width:100%;
-
   flex:1;
-
   min-height:0;
-
   background:#0d0a1a;
-
   touch-action:none;
-
 }
-
 .game-footer {
-
   height:90px;
-
   flex-shrink:0;
-
   background:#130e20;
-
   border-top:1px solid var(--border);
-
   display:flex;
-
   align-items:center;
-
   justify-content:space-around;
-
   padding:10px;
-
 }
-
 .control {
-
   width:65px;
-
   height:60px;
-
   border:1px solid var(--purple);
-
   border-radius:12px;
-
   background:#28183e;
-
   color:white;
-
   font-size:30px;
-
   touch-action:none;
-
   user-select:none;
-
 }
-
 .control.jump {
-
   width:100px;
-
   background:#59258b;
-
 }
-
 .game-hint { flex-shrink:0; text-align:center; padding:3px 6px 6px; background:#130e20; color:#9c8ab4; font-size:14px; }
 #turnOverlay {
-
   position:absolute;
-
   inset:65px 0 90px;
-
   z-index:4;
-
   display:flex;
-
   align-items:center;
-
   justify-content:center;
-
   background:#0d0a1a55;
-
   pointer-events:none;
-
 }
-
 .overlay-card {
-
   padding:20px;
-
   background:#171127ee;
-
   border:1px solid var(--purple);
-
   border-radius:12px;
-
   text-align:center;
-
   max-width:85%;
-
 }
-
 .overlay-card h2 {
-
   font-family:'Press Start 2P';
-
   font-size:15px;
-
   color:var(--purple);
-
   line-height:2;
-
 }
-
 #toast {
-
   position:fixed;
-
   bottom:25px;
-
   left:50%;
-
   transform:translateX(-50%);
-
   background:#261a39;
-
   border:1px solid var(--purple);
-
   padding:12px 22px;
-
   border-radius:10px;
-
   z-index:100;
-
   display:none;
-
   max-width:90%;
-
   text-align:center;
-
 }
-
 .pulse {
-
   animation:pulse 1.5s infinite;
-
 }
-
 @keyframes pulse {
-
   50% { opacity:.55; }
-
 }
-
 #deathOverlay {
-
   position:fixed;
-
   inset:0;
-
   background:#6b000066;
-
   z-index:20;
-
   display:flex;
-
   justify-content:center;
-
   align-items:center;
-
   animation:fadeIn .5s;
-
 }
-
 @keyframes fadeIn {
-
   from {opacity:0}
-
   to {opacity:1}
-
 }
-
 @media(max-width:600px) {
-
   .panel {padding:20px;}
-
   .hud-item {font-size:16px;}
-
   .hud-item small {font-size:11px;}
-
   .game-footer {height:85px;}
-
   .control {width:58px;height:55px;}
-
 }
 
+/* ===== OYNANABİLİRLİK İYİLEŞTİRMELERİ ===== */
+.game-footer{justify-content:flex-start;gap:12px;padding:10px 14px;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.control{width:76px;height:66px;font-size:30px;border-radius:14px;transition:background .08s,transform .08s;touch-action:none}
+.control.jump{width:118px;margin-left:auto;font-size:13px;font-family:'Press Start 2P',monospace}
+.control.active{background:#7e30c4;transform:scale(.95);box-shadow:0 0 16px #a855f7aa inset}
+.hud-item.warn span{color:var(--red);animation:pulse .5s infinite}
+.mute-btn{background:none;border:1px solid #392850;border-radius:8px;color:#fff;font-size:16px;padding:2px 8px;line-height:1}
 </style>
-
 </head>
-
 <body>
-
 <div id="app">
-
 <!-- AUTH SCREEN -->
-
 <section id="authScreen" class="screen">
-
   <div class="panel">
-
     <div class="logo pixel">GRAVEBOUND</div>
-
     <div class="subtitle">THE LAST JOURNEY</div>
-
     <div id="authMessage" class="status">
-
       Dünyaya katılmak için giriş yap.
-
     </div>
-
     <input id="email" type="email" placeholder="E-posta" autocomplete="email">
-
     <input id="password" type="password" placeholder="Şifre" autocomplete="current-password">
-
     <button class="btn" id="loginBtn">GİRİŞ YAP</button>
-
     <button class="btn secondary" id="registerBtn">HESAP OLUŞTUR</button>
-
     <div class="small">
-
       Bu dünyada herkesin bir hikâyesi var.<br>
-
       Her ölüm geride bir iz bırakır.
-
     </div>
-
   </div>
-
 </section>
-
 <!-- MENU SCREEN -->
-
 <section id="menuScreen" class="screen hidden">
-
   <div class="panel">
-
     <div class="logo pixel">GRAVEBOUND</div>
-
     <div class="subtitle">THE WORLD REMEMBERS YOU</div>
-
     <div id="welcome" class="status"></div>
-
     <div class="section-title">✦ BUGÜNÜN KAHRAMANLARI ✦</div>
-
     <div id="leaderboard">
-
       <div class="leader-row">
-
         <span>Henüz oyuncu yok</span>
-
         <span>—</span>
-
       </div>
-
     </div>
-
     <button class="btn gold" id="enterBtn">
-
       10₺ ÖDE VE SIRAYA GİR
-
     </button>
-
     <div id="windowMessage" class="small"></div>
-
     <button class="btn secondary" id="logoutBtn">ÇIKIŞ YAP</button>
-
   </div>
-
 </section>
-
 <!-- LOBBY -->
-
 <section id="lobbyScreen" class="screen hidden">
-
   <div class="panel">
-
     <div class="logo pixel">GRAVEBOUND</div>
-
     <div class="section-title">SIRA SENİ BEKLİYOR</div>
-
     <div class="status pulse" id="queuePosition">
-
       Sıran hesaplanıyor...
-
     </div>
-
     <div class="subtitle" id="queueEstimate"></div>
-
     <div class="small">
-
       Dünyadaki diğer oyuncuları izleyebilirsin.<br>
-
       Sıra sana geldiğinde macera başlayacak.
-
     </div>
-
     <button class="btn secondary" id="backMenuBtn">
-
       MENÜYE DÖN
-
     </button>
-
   </div>
-
 </section>
-
 <!-- GAME -->
-
 <section id="gameScreen" class="screen hidden">
-
   <div class="hud">
-
     <div class="hud-item">
-
       <small>BÖLÜM</small>
-
       <span id="levelText">1</span>
-
     </div>
-
     <div class="hud-item">
-
       <small>TUR SÜRESİ</small>
-
       <span id="timerText">60</span>
-
     </div>
-
     <div class="hud-item">
-
       <small>SIRA</small>
-
       <span id="positionText">1</span>
-
     </div>
-
     <div class="hud-item">
-
       <small>DURUM</small>
-
       <span id="turnText">BEKLE</span>
-
     </div>
-
   </div>
-
   <div class="adventure-stats" aria-live="polite">
     <span>♥ <b id="healthText">♥ ♥ ♥</b></span>
     <span>✧ RUH <b id="soulText">0</b></span>
     <span class="objective" id="objectiveText">Kapıya ulaş!</span>
+    <button id="muteBtn" class="mute-btn" aria-label="Sesi aç/kapat">🔊</button>
   </div>
   <canvas id="gameCanvas" aria-label="GRAVEBOUND oyun alanı"></canvas>
-
   <div id="turnOverlay">
-
     <div class="overlay-card">
-
       <h2 id="overlayTitle">BEKLENİYOR</h2>
-
       <div id="overlayDescription">Oyuncu bekleniyor...</div>
-
     </div>
-
   </div>
-
   <div class="game-footer">
-
     <button class="control" id="leftBtn" aria-label="Sola git">◀</button>
-
     <button class="control" id="rightBtn" aria-label="Sağa git">▶</button>
-
-    <button class="control jump" id="jumpBtn" aria-label="Zıpla">ZıPLA</button>
+    <button class="control jump" id="jumpBtn" aria-label="Zıpla">ZIPLA</button>
   </div>
-  <div class="game-hint">Ruh kristallerini topla ✧ • Gölge yaratıklarından ve dikenlerden kaç • Mor kapıya ulaş</div>
-
+  <div class="game-hint">Ruh kristallerini topla ✧ • Gölgelerin üstüne zıplayarak yok et • Dikenlerden kaç • Mor kapıya ulaş</div>
 </section>
-
 <div id="toast" role="status" aria-live="polite"></div>
-
 </div>
-
 <!-- FIREBASE + GAME LOGIC -->
-
 <script type="module">
-
 // ==========================================
-
 // CONFIG
-
 // ==========================================
-
 const firebaseConfig = {
-
   apiKey: "AIzaSyD_JEXFMYOR_z4sM4jgBwM0v6aooT9qeLE",
-
   authDomain: "gravebound.firebaseapp.com",
-
   projectId: "gravebound",
-
   storageBucket: "gravebound.firebasestorage.app",
-
   messagingSenderId: "848613573588",
-
   appId: "1:848613573588:web:de9ad82d30567d43358c41",
-
   measurementId: "G-TZL6F2N2P0"
-
 };
-
 const CONFIG = Object.freeze({
-
   PRICE_KURUS:1000,
-
   TURN_MS:60000,
-
   WINDOW_START_HOUR:17,
-
   WINDOW_END_HOUR:20,
-
   POLL_MS:3000,
-
   PLAYER_WIDTH:28,
-
   PLAYER_HEIGHT:38,
-
-  SPEED:3.4,
-
-  JUMP:-10.5,
-
-  GRAVITY:.48,
-
+  SPEED:3.6,
+  COYOTE_MS:110,
+  JUMP_BUFFER_MS:140,
+  JUMP:-11,
+  GRAVITY:.5,
   PLATFORM_HEIGHT:18,
-
   WORLD_WIDTH:5000,
-
   LEVEL_SEED:92837,
-
   FLOOR_Y:0.82,
-
   MAX_DELTA:35
-
 });
-
 // ==========================================
-
 // FIREBASE IMPORTS
-
 // ==========================================
-
 import { initializeApp }
-
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
 import {
-
   getAuth,
-
   createUserWithEmailAndPassword,
-
   signInWithEmailAndPassword,
-
   signOut,
-
   onAuthStateChanged
-
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
 import {
-
   getFirestore,
-
   collection,
-
   doc,
-
   addDoc,
-
   getDoc,
-
   getDocs,
-
   query,
-
   where,
-
   orderBy,
-
   limit,
-
   onSnapshot,
-
   runTransaction,
-
   serverTimestamp,
-
   Timestamp
-
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 const firebaseConfigured =
-
   firebaseConfig.apiKey !== "BURAYA_API_KEY" &&
-
   firebaseConfig.projectId !== "BURAYA_PROJECT_ID";
-
 let app,auth,db;
-
 if(firebaseConfigured) {
-
   app=initializeApp(firebaseConfig);
-
   auth=getAuth(app);
-
   db=getFirestore(app);
-
 }
-
 // ==========================================
-
 // GLOBAL STATE
-
 // ==========================================
-
 let currentUser=null;
-
 let currentEntry=null;
-
 let gameState={
-
   level:1,
-
   x:60,
-
   y:0,
-
   currentUserId:null,
-
   currentEntryId:null,
-
   turnEndsAt:null
-
 };
-
 let myTurn=false;
-
 let playing=false;
-
 let dead=false;
-
 let completed=false;
-
 let entries=[];
-
 let graves=[];
-
 let activeGhost=null;
-
 let unsubscribers=[];
-
 let pollTimer=null;
-
 let countdownTimer=null;
-
 let toastTimer=null;
-
 let levelPlatforms=[];
-
 let levelTraps=[];
 let levelSouls=[];
 let levelEnemies=[];
@@ -967,2254 +507,1501 @@ let damageCooldown=0;
 let lastDamageAt=0;
 let checkpointX=60;
 let deathReason="karanlıkta kayboldu";
-
 const canvas=document.getElementById("gameCanvas");
-
 const ctx=canvas.getContext("2d");
-
 const player={
-
   x:60,
-
   y:0,
-
   vx:0,
-
   vy:0,
-
   onGround:false,
-
   facing:1,
-
   frame:0
-
 };
-
 const camera={x:0};
-
 const input={
-
   left:false,
-
   right:false,
-
   jump:false
-
 };
-
 let particles=[];
-
 let screenShake=0;
-
 // ==========================================
-
 // HELPERS
-
 // ==========================================
-
 const $=id=>document.getElementById(id);
-
 function toast(message) {
-
   const el=$("toast");
-
   el.textContent=message;
-
   el.style.display="block";
-
   clearTimeout(toastTimer);
-
   toastTimer=setTimeout(()=>{
-
     el.style.display="none";
-
   },3000);
-
 }
-
 function showScreen(id) {
-
   document.querySelectorAll(".screen").forEach(el=>{
-
     el.classList.add("hidden");
-
   });
-
   $(id).classList.remove("hidden");
-
   if(id==="gameScreen") {
-
     resizeCanvas();
-
   }
-
 }
-
 function today() {
-
   const d=new Date();
-
   return [
-
     d.getFullYear(),
-
     String(d.getMonth()+1).padStart(2,"0"),
-
     String(d.getDate()).padStart(2,"0")
-
   ].join("-");
-
 }
-
 function timestampToMs(value) {
-
   if(!value) return 0;
-
   if(typeof value==="number") return value;
-
   if(value.toMillis) return value.toMillis();
-
   return new Date(value).getTime();
-
 }
-
 function getTurnEnd(state) {
-
   return timestampToMs(state?.turnEndsAt);
-
 }
-
 function randomSeed(seed) {
-
   let s=seed>>>0;
-
   return function() {
-
     s+=0x6D2B79F5;
-
     let t=s;
-
     t=Math.imul(t^t>>>15,t|1);
-
     t^=t+Math.imul(t^t>>>7,t|61);
-
     return ((t^t>>>14)>>>0)/4294967296;
-
   };
-
 }
-
 function clearSubscriptions() {
-
   unsubscribers.forEach(fn=>fn());
-
   unsubscribers=[];
-
   if(ghostUnsubscribe) {
     ghostUnsubscribe();
     ghostUnsubscribe=null;
   }
-
   clearInterval(pollTimer);
-
   clearInterval(countdownTimer);
-
 }
-
 // ==========================================
-
 // AUTH
-
 // ==========================================
-
 $("registerBtn").onclick=async()=>{
-
   try {
-
     if(!firebaseConfigured) {
-
       throw new Error("Önce Firebase yapılandırmasını tamamla.");
-
     }
-
     const email=$("email").value.trim();
-
     const password=$("password").value;
-
     if(password.length<6) {
-
       throw new Error("Şifre en az 6 karakter olmalı.");
-
     }
-
     await createUserWithEmailAndPassword(
-
       auth,email,password
-
     );
-
     toast("Hesabın oluşturuldu!");
-
   } catch(e) {
-
     toast(e.message);
-
   }
-
 };
-
 $("loginBtn").onclick=async()=>{
-
   try {
-
     if(!firebaseConfigured) {
-
       throw new Error("Firebase ayarlarını tamamlamalısın.");
-
     }
-
     await signInWithEmailAndPassword(
-
       auth,
-
       $("email").value.trim(),
-
       $("password").value
-
     );
-
   } catch(e) {
-
     toast(e.message);
-
   }
-
 };
-
 $("logoutBtn").onclick=async()=>{
-
   if(auth) await signOut(auth);
-
 };
-
 if(firebaseConfigured) {
-
   onAuthStateChanged(auth,async user=>{
-
     clearSubscriptions();
-
     currentUser=user;
-
     if(ghostUnsubscribe) {
       ghostUnsubscribe();
       ghostUnsubscribe=null;
     }
-
     if(user) {
-
       $("welcome").textContent=
-
         "Hoş geldin, "+(user.email ? user.email.split("@")[0] : "Oyuncu");
-
       showScreen("menuScreen");
-
       await loadLeaderboard();
-
       startWindowClock();
-
       subscribeWorld();
-
     } else {
-
       showScreen("authScreen");
-
       myTurn=false;
-
       playing=false;
-
     }
-
   });
-
 } else {
   showScreen("authScreen");
   toast("Firebase bağlantısı yapılandırılmamış.");
 }
-
 // ==========================================
-
 // DAILY WINDOW
-
 // ==========================================
-
 function isWindowOpen() {
-
   // TEST MODE: 17:00–20:00 restriction temporarily disabled.
   return true;
-
 }
-
 function getNextWindow() {
-
   const now=new Date();
-
   const next=new Date(now);
-
   next.setHours(CONFIG.WINDOW_START_HOUR,0,0,0);
-
   if(now.getHours()>=CONFIG.WINDOW_END_HOUR) {
-
     next.setDate(next.getDate()+1);
-
   }
-
   return next;
-
 }
-
 function startWindowClock() {
-
   updateWindow();
-
   const timer=setInterval(updateWindow,1000);
-
   unsubscribers.push(()=>{
-
     clearInterval(timer);
-
   });
-
 }
-
 function updateWindow() {
-
   const btn=$("enterBtn");
-
   if(!currentUser) return;
-
   if(isWindowOpen()) {
-
     btn.disabled=false;
-
     $("windowMessage").textContent=
-
       "✦ TEST MODU — KAPI 24 SAAT AÇIK ✦";
-
   } else {
-
     btn.disabled=true;
-
     const diff=getNextWindow()-new Date();
-
     const h=Math.floor(diff/3600000);
-
     const m=Math.floor(diff%3600000/60000);
-
     const s=Math.floor(diff%60000/1000);
-
     $("windowMessage").textContent=
-
       `Sıra 17:00'de açılır • ${h}sa ${m}dk ${s}sn`;
-
   }
-
 }
-
 // ==========================================
-
 // QUEUE + MOCK PAYMENT
-
 // ==========================================
-
 $("enterBtn").onclick=async()=>{
-
   if(!currentUser || !isWindowOpen()) return;
-
   try {
-
     const day=today();
-
     const existing=query(
-
       collection(db,"entries"),
-
       where("userId","==",currentUser.uid),
-
       where("day","==",day)
-
     );
-
     const existingDocs=await getDocs(existing);
-
     if(!existingDocs.empty) {
-
       currentEntry={
-
         id:existingDocs.docs[0].id,
-
         ...existingDocs.docs[0].data()
-
       };
-
       toast("Bugün zaten sıraya katılmışsın.");
-
       showScreen("lobbyScreen");
-
       startQueue();
-
       return;
-
     }
-
     // MOCK PAYMENT:
-
     // Gerçek para tahsilatı YAPILMAZ.
-
     const payment=await addDoc(
-
       collection(db,"payments"),
-
       {
-
         userId:currentUser.uid,
-
         amountKurus:CONFIG.PRICE_KURUS,
-
         status:"PAID",
-
         createdAt:serverTimestamp()
-
       }
-
     );
-
     const entry=await addDoc(
-
       collection(db,"entries"),
-
       {
-
         userId:currentUser.uid,
-
         displayName:currentUser.email.split("@")[0],
-
         day,
-
         amountKurus:CONFIG.PRICE_KURUS,
-
         status:"QUEUED",
-
         paidAt:serverTimestamp(),
-
         turnEndsAt:null,
-
         bestLevel:1
-
       }
-
     );
-
     currentEntry={
-
       id:entry.id,
-
       userId:currentUser.uid,
-
       status:"QUEUED",
-
       paymentId:payment.id
-
     };
-
     toast("Sıraya katıldın!");
-
     showScreen("lobbyScreen");
-
     startQueue();
-
   } catch(e) {
-
     toast("İşlem başarısız: "+e.message);
-
   }
-
 };
-
 // ==========================================
-
 // WORLD SUBSCRIPTIONS
-
 // ==========================================
-
 function subscribeWorld() {
-
   const stateRef=doc(db,"gameState","current");
-
   const unsubState=onSnapshot(
-
     stateRef,
-
     snap=>{
-
       if(snap.exists()) {
-
         gameState=snap.data();
-
         if(myTurn) {
-
           player.x=gameState.x||player.x;
-
           player.y=gameState.y||player.y;
-
         }
-
       }
-
       updateGameHUD();
-
     },
-
     e=>toast("Dünya bağlantı hatası: "+e.message)
-
   );
-
   unsubscribers.push(unsubState);
-
   const gravesQuery=query(
-
     collection(db,"graves"),
-
     orderBy("createdAt","asc")
-
   );
-
   const unsubGraves=onSnapshot(
-
     gravesQuery,
-
     snap=>{
-
       graves=snap.docs.map(d=>({
-
         id:d.id,
-
         ...d.data()
-
       }));
-
     },
-
     e=>toast("Mezarlık yüklenemedi.")
-
   );
-
   unsubscribers.push(unsubGraves);
-
   const entryQuery=query(
-
     collection(db,"entries"),
-
     where("day","==",today()),
-
     orderBy("paidAt","asc")
-
   );
-
   const unsubEntries=onSnapshot(
-
     entryQuery,
-
     snap=>{
-
       entries=snap.docs.map(d=>({
-
         id:d.id,
-
         ...d.data()
-
       }));
-
       updateQueueUI();
-
     },
-
     e=>toast("Sıra listesi yüklenemedi.")
-
   );
-
   unsubscribers.push(unsubEntries);
-
 }
-
 // ==========================================
-
 // QUEUE POSITION
-
 // ==========================================
-
 function getQueuePosition() {
-
   if(!currentEntry) return 0;
-
   const queued=entries.filter(e=>
-
     e.status==="QUEUED" || e.status==="PLAYING"
-
   );
-
   const index=queued.findIndex(e=>
-
     e.id===currentEntry.id
-
   );
-
   return index<0?0:index+1;
-
 }
-
 function updateQueueUI() {
-
   if(!currentEntry) return;
-
   const position=getQueuePosition();
-
   const waiting=Math.max(0,position-1);
-
   $("queuePosition").textContent=
-
     position
-
     ?`SIRAN: ${position}`
-
     :"Sıra hazırlanıyor...";
-
   $("queueEstimate").textContent=
-
     `Önünde ${waiting} kişi var • Tahmini bekleme ~${waiting} dakika`;
-
   updateGameHUD();
-
 }
-
 $("backMenuBtn").onclick=()=>{
-
   showScreen("menuScreen");
-
 };
-
 // ==========================================
-
 // QUEUE TRANSACTION
-
 // ==========================================
-
 function startQueue() {
-
   clearInterval(pollTimer);
-
   pollTimer=setInterval(async()=>{
-
     try {
-
       await checkExpiredTurn();
-
       await tryClaimTurn();
-
     } catch(e) {
-
       console.error("Queue:",e);
-
     }
-
   },CONFIG.POLL_MS);
-
   checkExpiredTurn().then(tryClaimTurn).catch(e=>{
-
     console.error(e);
-
   });
-
 }
-
 async function checkExpiredTurn() {
-
   const stateRef=doc(db,"gameState","current");
-
   await runTransaction(db,async tx=>{
-
     const snap=await tx.get(stateRef);
-
     if(!snap.exists()) return;
-
     const state=snap.data();
-
     if(!state.currentUserId) return;
-
     if(getTurnEnd(state)>Date.now()) return;
-
     tx.update(stateRef,{
-
       currentUserId:null,
-
       currentEntryId:null,
-
       turnEndsAt:null,
-
       updatedAt:serverTimestamp()
-
     });
-
   });
-
 }
-
 async function tryClaimTurn() {
-
   if(!currentEntry || !currentUser) return;
-
   if(myTurn) return;
-
   const stateRef=doc(db,"gameState","current");
-
   const entryRef=doc(db,"entries",currentEntry.id);
-
   await runTransaction(db,async tx=>{
-
     const stateSnap=await tx.get(stateRef);
-
     const entrySnap=await tx.get(entryRef);
-
     if(!entrySnap.exists()) return;
-
     const entry=entrySnap.data();
-
     if(entry.status!=="QUEUED") return;
-
     if(entry.userId!==currentUser.uid) return;
-
     if(!isWindowOpen()) return;
-
     let state={
-
       level:1,
-
       x:60,
-
       y:0,
-
       currentUserId:null,
-
       currentEntryId:null,
-
       turnEndsAt:null
-
     };
-
     if(stateSnap.exists()) {
-
       state=stateSnap.data();
-
     }
-
     if(state.currentUserId) {
-
       if(getTurnEnd(state)>Date.now()) return;
-
       return;
-
     }
-
     // Kuyrukta en eski oyuncu kontrolü.
-
     const queued=entries
-
       .filter(e=>e.status==="QUEUED")
-
       .sort((a,b)=>
-
         timestampToMs(a.paidAt)-
-
         timestampToMs(b.paidAt)
-
       );
-
     if(!queued.length) return;
-
     if(queued[0].id!==currentEntry.id) return;
-
     const end=Date.now()+CONFIG.TURN_MS;
-
     tx.set(stateRef,{
-
       ...state,
-
       currentUserId:currentUser.uid,
-
       currentEntryId:currentEntry.id,
-
       turnEndsAt:Timestamp.fromMillis(end),
-
       updatedAt:serverTimestamp()
-
     });
-
     tx.update(entryRef,{
-
       status:"PLAYING",
-
       turnEndsAt:Timestamp.fromMillis(end)
-
     });
-
   });
-
   const fresh=await getDoc(stateRef);
-
   if(fresh.exists()) {
-
     const state=fresh.data();
-
     if(state.currentUserId===currentUser.uid &&
-
        state.currentEntryId===currentEntry.id) {
-
       activateTurn(state);
-
     }
-
   }
-
 }
-
 // ==========================================
-
 // TURN
-
 // ==========================================
-
 function activateTurn(state) {
-
   if(myTurn) return;
-
   myTurn=true;
-
   playing=true;
-
   dead=false;
   playerHealth=3;
   soulCount=0;
   damageCooldown=0;
   checkpointX=60;
+  completed=false;
+  player.kb=0; player.squash=0; player.lastGrounded=0;
+  input.jumpPressedAt=0;
+  floaters=[]; particles=[]; camera.x=0;
   updateAdventureHUD();
-
   gameState=state;
-
   player.x=state.x||60;
-
   player.y=state.y||0;
-
   player.vx=0;
-
   player.vy=0;
-
   showScreen("gameScreen");
   resizeCanvas();
   generateLevel(state.level||1);
-
   showScreen("gameScreen");
-
   $("turnOverlay").classList.add("hidden");
-
   $("turnText").textContent="SENİN";
-
   startTurnClock();
-
   toast("SENİN TURUN BAŞLADI!");
-
 }
-
 function startTurnClock() {
-
   clearInterval(countdownTimer);
-
   countdownTimer=setInterval(async()=>{
-
     const end=getTurnEnd(gameState);
-
     const remaining=Math.max(0,end-Date.now());
-
     $("timerText").textContent=
-
       Math.ceil(remaining/1000);
-
+    $("timerText").parentElement.classList.toggle("warn",remaining>0 && remaining<=10000);
     if(remaining<=0) {
-
       myTurn=false;
-
       playing=false;
-
       await savePosition();
-
       showScreen("lobbyScreen");
-
       $("turnOverlay").classList.remove("hidden");
-
       $("overlayTitle").textContent="TUR BİTTİ";
-
       $("overlayDescription").textContent=
-
         "Sıradaki oyuncu hazırlanıyor.";
-
       clearInterval(countdownTimer);
-
     }
-
   },250);
-
 }
-
 // ==========================================
-
 // LEVEL GENERATION
-
 // ==========================================
-
 function generateLevel(level) {
   const rand=randomSeed(CONFIG.LEVEL_SEED*level);
   levelPlatforms=[]; levelTraps=[]; levelSouls=[]; levelEnemies=[];
-  const floor=canvas.clientHeight*CONFIG.FLOOR_Y;
-  levelPlatforms.push({x:0,y:floor,w:CONFIG.WORLD_WIDTH,h:70});
-  const obstacleCount=5+Math.min(level,7);
-  let lastX=220;
-  for(let i=0;i<obstacleCount;i++) {
-    const gap=170+rand()*75;
-    const x=lastX+gap;
-    const width=105+rand()*85;
-    const y=floor-(70+rand()*105);
-    levelPlatforms.push({x,y,w:width,h:16});
-    // Floor spikes and a small soul reward on/near each platform.
-    levelTraps.push({x:x+width+28,y:floor-22,w:28+rand()*28,h:22});
-    levelSouls.push({x:x+width*.5,y:y-32,r:9,taken:false});
-    if(i%2===1) levelEnemies.push({x:x+width+75,y:floor-34,w:27,h:30,min:x+width+35,max:x+width+150,dir:1,speed:0.8+rand()*.45,alive:true});
-    lastX=x;
-  }
-  // Additional souls reward exploration and jumping.
-  for(let i=0;i<8;i++) {
-    const x=480+i*500+rand()*180;
-    levelSouls.push({x,y:floor-75-rand()*70,r:9,taken:false});
+  const H=canvas.clientHeight;
+  const floor=H*CONFIG.FLOOR_Y;
+  levelPlatforms.push({x:0,y:floor,w:CONFIG.WORLD_WIDTH,h:H-floor+20,ground:true});
+  // Başlangıçta oyuncuya yol gösteren birkaç ruh
+  for(let i=0;i<3;i++) levelSouls.push({x:150+i*45,y:floor-34-Math.sin(i/2*Math.PI)*26,r:9,taken:false});
+  const count=6+Math.min(level,5);
+  const span=(CONFIG.WORLD_WIDTH-900)/count;
+  for(let i=0;i<count;i++) {
+    const bx=330+i*span+rand()*30;
+    const w=115+rand()*75;
+    // Yükseklik, zıplama menziline (~120px) güvenle sığar.
+    const y=floor-(62+rand()*40);
+    levelPlatforms.push({x:bx,y,w,h:16});
+    levelSouls.push({x:bx+w*.5,y:y-30,r:9,taken:false});
+    // İkinci kat platform (ilk platformdan zıplayarak ulaşılır)
+    if(i%3===2 || (level>=3 && i%2===0)) {
+      const w2=90+rand()*45;
+      const y2=y-(66+rand()*22);
+      const x2=bx+w*.45+rand()*40;
+      levelPlatforms.push({x:x2,y:y2,w:w2,h:16});
+      levelSouls.push({x:x2+w2*.5,y:y2-30,r:9,taken:false});
+    }
+    // Dikenler + üzerinden zıplamaya davet eden ruh yayı
+    const sx=bx+w+34+rand()*24;
+    const sw=Math.min(72,30+rand()*18+level*4);
+    levelTraps.push({x:sx,y:floor-20,w:sw,h:20});
+    for(let k=0;k<3;k++) {
+      const t=(k+1)/4;
+      levelSouls.push({x:sx+sw*t,y:floor-58-Math.sin(t*Math.PI)*34,r:9,taken:false});
+    }
+    // Yerde devriye gezen gölge
+    const ex=sx+sw+36;
+    if(i%2===1 || level>=3) {
+      const len=100+rand()*40;
+      levelEnemies.push({
+        x:ex+len/2,y:floor-30,w:27,h:30,min:ex,max:ex+len,
+        dir:rand()<.5?-1:1,speed:.8+rand()*.4+level*.05,alive:true
+      });
+    }
+    // Uçan gölge (2. bölümden itibaren), sonraki platformun önünde nöbet tutar
+    if(level>=2 && i%3===0 && i<count-1) {
+      const fx=bx+span-120;
+      levelEnemies.push({
+        x:fx,y:floor-100,baseY:floor-100,w:28,h:24,min:fx-55,max:fx+55,
+        dir:1,speed:1+level*.06,alive:true,fly:true,phase:rand()*6
+      });
+    }
   }
   portal={x:CONFIG.WORLD_WIDTH-180,y:floor-110,w:60,h:110};
-  player.x=gameState.x||60;
   updateAdventureHUD();
 }
-
 function updateAdventureHUD() {
   const health=$("healthText"), souls=$("soulText"), objective=$("objectiveText");
   if(health) health.textContent="♥ ".repeat(Math.max(0,playerHealth))+("♡ ".repeat(Math.max(0,3-playerHealth))).trim();
   if(souls) souls.textContent=String(soulCount);
   if(objective) objective.textContent=`Bölüm ${gameState.level||1}: Kapıyı bul`;
 }
-
 // ==========================================
-
 // CANVAS
-
 // ==========================================
-
+let T=Date.now();
+let lastFrameT=0;
+let floaters=[];
+let ghostPos=null;
+let audioCtx=null;
+let muted=false;
+player.kb=0; player.squash=0; player.lastGrounded=0;
+input.jumpHeld=false; input.jumpPressedAt=0;
+// ---- Ses efektleri (WebAudio, çok kısık) ----
+function sfx(kind) {
+  if(muted) return;
+  try {
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended") audioCtx.resume();
+    const t=audioCtx.currentTime;
+    const tones={
+      jump:[[300,520,.12,"square"]],
+      soul:[[760,1180,.1,"sine"]],
+      hurt:[[220,70,.28,"sawtooth"]],
+      stomp:[[200,90,.12,"square"]],
+      heal:[[500,900,.25,"sine"]],
+      portal:[[400,1000,.5,"triangle"]]
+    };
+    (tones[kind]||[]).forEach(([f0,f1,d,type])=>{
+      const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+      o.type=type;
+      o.frequency.setValueAtTime(f0,t);
+      o.frequency.exponentialRampToValueAtTime(f1,t+d);
+      g.gain.setValueAtTime(.05,t);
+      g.gain.exponentialRampToValueAtTime(.001,t+d);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t); o.stop(t+d+.02);
+    });
+  } catch(e) {}
+}
 function resizeCanvas() {
-
   const rect=canvas.getBoundingClientRect();
-
+  if(!rect.width || !rect.height) return;
   const dpr=Math.min(window.devicePixelRatio||1,2);
-
+  const oldFloor=levelPlatforms.length?levelPlatforms[0].y:null;
   canvas.width=rect.width*dpr;
-
   canvas.height=rect.height*dpr;
-
   ctx.setTransform(dpr,0,0,dpr,0,0);
-
-  if(myTurn) generateLevel(gameState.level||1);
-
+  if(myTurn) {
+    // Yeniden boyutlanınca toplanan ruhlar / ölen düşmanlar ve konum korunur.
+    const taken=levelSouls.map(s=>s.taken);
+    const alive=levelEnemies.map(e=>e.alive);
+    generateLevel(gameState.level||1);
+    levelSouls.forEach((s,i)=>{ if(taken[i]) s.taken=true; });
+    levelEnemies.forEach((e,i)=>{ if(alive[i]===false) e.alive=false; });
+    if(oldFloor!==null) player.y+=levelPlatforms[0].y-oldFloor;
+  }
 }
-
 window.addEventListener("resize",resizeCanvas);
-
+function drawDeadTree(x,gy,s) {
+  ctx.strokeStyle="#140c20";
+  ctx.lineCap="round";
+  ctx.lineWidth=7;
+  ctx.beginPath(); ctx.moveTo(x,gy); ctx.lineTo(x+3,gy-s*1.6); ctx.stroke();
+  ctx.lineWidth=4;
+  ctx.beginPath();
+  ctx.moveTo(x+2,gy-s*.9); ctx.lineTo(x-s*.5,gy-s*1.3);
+  ctx.moveTo(x+3,gy-s*1.2); ctx.lineTo(x+s*.55,gy-s*1.65);
+  ctx.moveTo(x+3,gy-s*1.6); ctx.lineTo(x-s*.25,gy-s*2.0);
+  ctx.stroke();
+}
 function drawBackground(w,h) {
-
   const gradient=ctx.createLinearGradient(0,0,0,h);
-
-  gradient.addColorStop(0,"#100b25");
-
-  gradient.addColorStop(1,"#21132f");
-
+  gradient.addColorStop(0,"#0a0720");
+  gradient.addColorStop(.6,"#1d1030");
+  gradient.addColorStop(1,"#2a1536");
   ctx.fillStyle=gradient;
-
   ctx.fillRect(0,0,w,h);
-
-  // Stars
-
-  for(let i=0;i<65;i++) {
-
-    const x=(i*173-camera.x*.12)%w;
-
-    const y=(i*83)%Math.max(1,h*.55);
-
-    ctx.fillStyle="#ffffff66";
-
-    ctx.fillRect(x,y,2,2);
-
-  }
-
-  // Distant hills
-
-  for(let layer=0;layer<2;layer++) {
-
-    ctx.beginPath();
-
-    const offset=camera.x*(.1+layer*.12);
-
-    ctx.moveTo(0,h);
-
-    for(let x=0;x<=w+20;x+=20) {
-
-      const y=
-
-        h*.65+
-
-        Math.sin((x+offset)*.008+layer)*30+
-
-        Math.cos((x+offset)*.015)*15;
-
-      ctx.lineTo(x,y);
-
-    }
-
-    ctx.lineTo(w,h);
-
-    ctx.fillStyle=layer===0?"#261735":"#1a112b";
-
-    ctx.fill();
-
-  }
-
-  // Fog
-
-  const fog=ctx.createLinearGradient(0,h*.6,0,h);
-
-  fog.addColorStop(0,"transparent");
-
-  fog.addColorStop(1,"#a855f722");
-
-  ctx.fillStyle=fog;
-
-  ctx.fillRect(0,h*.6,w,h*.4);
-
-}
-
-function drawPlayer(x,y,alpha=1,ghost=false) {
-
+  // Ay
+  const mx=w*.78-camera.x*.02, my=h*.17;
   ctx.save();
-
-  ctx.globalAlpha=alpha;
-
-  const sx=x-camera.x;
-
-  // Shadow
-
-  ctx.fillStyle="#0008";
-
-  ctx.beginPath();
-
-  ctx.ellipse(
-
-    sx+14,y+39,15,4,0,0,Math.PI*2
-
-  );
-
-  ctx.fill();
-
-  // Body
-
-  ctx.fillStyle=ghost?"#8be9fd":"#a855f7";
-
-  ctx.fillRect(sx+5,y+12,19,23);
-
-  // Head
-
-  ctx.fillStyle=ghost?"#b7f4ff":"#e8d5ff";
-
-  ctx.fillRect(sx+7,y,16,14);
-
-  // Eyes
-
-  ctx.fillStyle="#171127";
-
-  ctx.fillRect(sx+17,y+5,3,3);
-
-  // Cloak
-
-  ctx.fillStyle=ghost?"#8be9fd88":"#60248f";
-
-  ctx.beginPath();
-
-  ctx.moveTo(sx+5,y+15);
-
-  ctx.lineTo(sx-2,y+35);
-
-  ctx.lineTo(sx+26,y+35);
-
-  ctx.lineTo(sx+24,y+15);
-
-  ctx.fill();
-
+  ctx.shadowColor="#c4b5fd"; ctx.shadowBlur=45;
+  ctx.fillStyle="#ede9fe";
+  ctx.beginPath(); ctx.arc(mx,my,26,0,Math.PI*2); ctx.fill();
   ctx.restore();
-
+  ctx.fillStyle="#d3c7ec";
+  ctx.beginPath(); ctx.arc(mx-8,my-6,5,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(mx+9,my+8,3.5,0,Math.PI*2); ctx.fill();
+  // Yıldızlar (titreşen)
+  for(let i=0;i<70;i++) {
+    const x=(((i*173.7-camera.x*.1)%w)+w)%w;
+    const y=(i*83.3)%Math.max(1,h*.55);
+    const big=i%7===0?3:2;
+    ctx.globalAlpha=.3+.35*Math.sin(T/600+i);
+    ctx.fillStyle="#ffffff";
+    ctx.fillRect(x,y,big,big);
+  }
+  ctx.globalAlpha=1;
+  // Uzak tepeler (3 katman)
+  const layers=[
+    {color:"#2a1840",base:.60,speed:.06},
+    {color:"#211433",base:.66,speed:.12},
+    {color:"#190f28",base:.72,speed:.20}
+  ];
+  layers.forEach((L,layer)=>{
+    ctx.beginPath();
+    const offset=camera.x*L.speed;
+    ctx.moveTo(0,h);
+    for(let x=0;x<=w+20;x+=20) {
+      const y=h*L.base+Math.sin((x+offset)*.008+layer*1.7)*28+Math.cos((x+offset)*.015+layer)*14;
+      ctx.lineTo(x,y);
+    }
+    ctx.lineTo(w+20,h);
+    ctx.fillStyle=L.color;
+    ctx.fill();
+  });
+  // Ölü ağaçlar (paralaks)
+  const pitch=340, off=camera.x*.5;
+  const first=Math.floor(off/pitch)-1;
+  const gy=h*CONFIG.FLOOR_Y;
+  for(let k=first;k<first+Math.ceil(w/pitch)+3;k++) {
+    drawDeadTree(k*pitch-off+((k*97)%60),gy,38+Math.abs((k*53)%30));
+  }
+  // Sis
+  const fog=ctx.createLinearGradient(0,h*.6,0,h);
+  fog.addColorStop(0,"rgba(168,85,247,0)");
+  fog.addColorStop(1,"rgba(168,85,247,.14)");
+  ctx.fillStyle=fog;
+  ctx.fillRect(0,h*.6,w,h*.4);
 }
-
+function drawPlayer(x,y,alpha=1,ghost=false) {
+  const sx=x-camera.x;
+  const moving=!ghost && Math.abs(player.vx)>.4 && player.onGround;
+  const f=ghost?1:player.facing;
+  const swing=moving?Math.sin(player.frame*.55)*5:0;
+  const stretch=ghost?0:Math.min(.18,Math.abs(player.vy)*.014);
+  const land=ghost?0:Math.max(0,player.squash);
+  const runBob=moving?Math.abs(Math.sin(player.frame*.55))*-1.5:0;
+  ctx.save();
+  ctx.globalAlpha=alpha;
+  // Gölge
+  ctx.fillStyle="#0008";
+  ctx.beginPath(); ctx.ellipse(sx+14,y+39,15,4,0,0,Math.PI*2); ctx.fill();
+  // Esneme / ezilme + yön çevirme (ayak noktası etrafında)
+  ctx.translate(sx+14,y+38);
+  ctx.scale(f*(1+land*.18-stretch*.5),1-land*.2+stretch);
+  ctx.translate(-14,-38+runBob);
+  // Bacaklar
+  ctx.fillStyle=ghost?"#6fc7da":"#2a1240";
+  ctx.fillRect(8+swing,33,5,6);
+  ctx.fillRect(16-swing,33,5,6);
+  // Pelerin
+  const sway=Math.sin((ghost?T/200:player.frame*.2))*2;
+  ctx.fillStyle=ghost?"#8be9fd88":"#60248f";
+  ctx.beginPath();
+  ctx.moveTo(5,15); ctx.lineTo(-3+sway,35); ctx.lineTo(26+sway*.5,35); ctx.lineTo(24,15);
+  ctx.fill();
+  // Gövde
+  ctx.fillStyle=ghost?"#8be9fd":"#a855f7";
+  ctx.fillRect(5,12,19,22);
+  ctx.fillStyle=ghost?"#b7f4ff":"#c58bff";
+  ctx.fillRect(5,12,19,3);
+  // Kafa + kukuleta ucu
+  ctx.fillStyle=ghost?"#b7f4ff":"#e8d5ff";
+  ctx.fillRect(7,0,16,14);
+  ctx.fillStyle=ghost?"#8be9fd":"#7e22ce";
+  ctx.beginPath(); ctx.moveTo(6,1); ctx.lineTo(15,-5); ctx.lineTo(24,1); ctx.closePath(); ctx.fill();
+  // Gözler (bakılan yöne)
+  ctx.fillStyle="#171127";
+  ctx.fillRect(16,5,3,4);
+  ctx.fillRect(11,5,3,4);
+  ctx.restore();
+}
 function drawGraves() {
-
+  const cw=canvas.clientWidth;
   graves.forEach(g=>{
-
     if(g.level!==(gameState.level||1)) return;
-
     const x=g.x-camera.x;
-
     const y=g.y;
-
-    if(x<-100 || x>canvas.clientWidth+100) return;
-
-    // Gravestone
-
+    if(x<-100 || x>cw+100) return;
     ctx.fillStyle="#777184";
-
     ctx.beginPath();
-
     ctx.roundRect(x,y-35,30,38,7);
-
     ctx.fill();
-
     ctx.fillStyle="#aaa3b7";
-
     ctx.fillRect(x+5,y-30,20,3);
-
     ctx.fillStyle="#4ade80";
-
     ctx.fillRect(x+13,y-22,4,12);
-
-    // Soul particles
-
     if(Math.random()<.08) {
-
       particles.push({
-
-        x:g.x+15,
-
-        y:y-35,
-
-        vx:(Math.random()-.5)*.5,
-
-        vy:-Math.random()*.8,
-
-        life:50,
-
-        color:"#4ade80"
-
+        x:g.x+15, y:y-35,
+        vx:(Math.random()-.5)*.5, vy:-Math.random()*.8,
+        life:50, color:"#4ade80"
       });
-
     }
-
   });
-
 }
-
 function drawPlatforms() {
-
+  const cw=canvas.clientWidth;
   levelPlatforms.forEach(p=>{
-
     const x=p.x-camera.x;
-
-    ctx.fillStyle="#42304c";
-
+    if(x>cw || x+p.w<0) return;
+    const grd=ctx.createLinearGradient(0,p.y,0,p.y+p.h);
+    grd.addColorStop(0,p.ground?"#3a2a4d":"#4a3658");
+    grd.addColorStop(1,p.ground?"#150e21":"#2a1c38");
+    ctx.fillStyle=grd;
     ctx.fillRect(x,p.y,p.w,p.h);
-
+    // Parlayan üst çizgi
+    ctx.save();
+    ctx.shadowColor="#a855f7"; ctx.shadowBlur=12;
     ctx.fillStyle="#a855f7";
-
     ctx.fillRect(x,p.y,p.w,4);
-
-    ctx.fillStyle="#21152c";
-
-    for(let i=0;i<p.w;i+=30) {
-
+    ctx.restore();
+    // Taş / çatlak detayı (sadece görünen kısım)
+    ctx.fillStyle="#1f1430";
+    const start=Math.max(0,Math.floor(-x/30)*30);
+    for(let i=start;i<p.w && x+i<cw;i+=30) {
       ctx.fillRect(x+i,p.y+10,15,5);
-
+      if(p.ground) ctx.fillRect(x+i+8,p.y+28,12,4);
     }
-
   });
-
 }
-
 function drawTraps() {
-
+  const cw=canvas.clientWidth;
   levelTraps.forEach(t=>{
-
     const x=t.x-camera.x;
-
-    ctx.fillStyle="#ef4444";
-
-    ctx.beginPath();
-
+    if(x>cw+40 || x+t.w<-40) return;
     const count=Math.ceil(t.w/15);
-
     for(let i=0;i<count;i++) {
-
+      const g=ctx.createLinearGradient(0,t.y,0,t.y+t.h);
+      g.addColorStop(0,"#fecaca");
+      g.addColorStop(.35,"#ef4444");
+      g.addColorStop(1,"#7f1d1d");
+      ctx.fillStyle=g;
+      ctx.beginPath();
       ctx.moveTo(x+i*15,t.y+t.h);
-
-      ctx.lineTo(x+i*15+8,t.y);
-
+      ctx.lineTo(x+i*15+7.5,t.y);
       ctx.lineTo(x+i*15+15,t.y+t.h);
-
+      ctx.fill();
     }
-
-    ctx.fill();
-
   });
-
 }
-
 function drawSouls() {
+  const cw=canvas.clientWidth;
   levelSouls.forEach(s=>{
     if(s.taken) return;
-    const x=s.x-camera.x, pulse=1+Math.sin(Date.now()/180+s.x)*.18;
-    ctx.save(); ctx.translate(x,s.y); ctx.rotate(Math.PI/4);
+    const x=s.x-camera.x;
+    if(x<-30 || x>cw+30) return;
+    const pulse=1+Math.sin(T/180+s.x)*.18;
+    const y=s.y+Math.sin(T/320+s.x)*3;
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(Math.PI/4);
     ctx.shadowColor="#67e8f9"; ctx.shadowBlur=18;
-    ctx.fillStyle="#67e8f9"; ctx.fillRect(-s.r*pulse,-s.r*pulse,s.r*2*pulse,s.r*2*pulse);
+    ctx.fillStyle="#67e8f9";
+    ctx.fillRect(-s.r*pulse,-s.r*pulse,s.r*2*pulse,s.r*2*pulse);
+    ctx.shadowBlur=0;
+    ctx.fillStyle="#ecfeff";
+    ctx.fillRect(-s.r*.4,-s.r*.4,s.r*.8,s.r*.8);
     ctx.restore();
   });
 }
-
 function drawEnemies() {
+  const cw=canvas.clientWidth;
   levelEnemies.forEach(e=>{
     if(!e.alive) return;
-    const x=e.x-camera.x, bob=Math.sin(Date.now()/110+e.x)*2;
-    ctx.fillStyle="#080611"; ctx.fillRect(x+3,e.y+8+bob,22,22);
-    ctx.fillStyle="#6b263d"; ctx.fillRect(x+1,e.y+13+bob,25,17);
-    ctx.fillStyle="#fb7185"; ctx.fillRect(x+7,e.y+8+bob,4,4); ctx.fillRect(x+17,e.y+8+bob,4,4);
-    ctx.fillStyle="#d1a4ad"; ctx.fillRect(x+6,e.y+27+bob,5,5); ctx.fillRect(x+17,e.y+27+bob,5,5);
+    const x=e.x-camera.x;
+    if(x<-60 || x>cw+60) return;
+    const bob=e.fly?0:Math.sin(T/110+e.x)*1.5;
+    ctx.save();
+    ctx.translate(x+e.w/2,e.y+bob);
+    ctx.scale(e.dir,1);
+    ctx.translate(-e.w/2,0);
+    if(e.fly) {
+      const flap=Math.sin(T/70+e.phase)*8;
+      ctx.fillStyle="#3b1030";
+      ctx.beginPath(); ctx.moveTo(6,10); ctx.lineTo(-10,2+flap); ctx.lineTo(-4,16); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(22,10); ctx.lineTo(38,2+flap); ctx.lineTo(32,16); ctx.closePath(); ctx.fill();
+      ctx.fillStyle="#080611";
+      ctx.beginPath(); ctx.ellipse(14,12,13,11,0,0,Math.PI*2); ctx.fill();
+      ctx.shadowColor="#fb7185"; ctx.shadowBlur=8;
+      ctx.fillStyle="#fb7185";
+      ctx.fillRect(7,8,4,4); ctx.fillRect(17,8,4,4);
+    } else {
+      ctx.fillStyle="#080611"; ctx.fillRect(3,6,22,22);
+      ctx.fillStyle="#6b263d"; ctx.fillRect(1,11,25,17);
+      ctx.shadowColor="#fb7185"; ctx.shadowBlur=8;
+      ctx.fillStyle="#fb7185"; ctx.fillRect(7,6,4,4); ctx.fillRect(17,6,4,4);
+      ctx.shadowBlur=0;
+      ctx.fillStyle="#d1a4ad";
+      const step=Math.sin(T/120+e.x)*2;
+      ctx.fillRect(6+step,25,5,5); ctx.fillRect(17-step,25,5,5);
+    }
+    ctx.restore();
   });
 }
-
 function drawPortal() {
-
   if(!portal) return;
-
   const x=portal.x-camera.x;
-
+  if(x<-120 || x>canvas.clientWidth+120) return;
+  const cx=x+30, cy=portal.y+55;
+  const pulse=.5+.5*Math.sin(T/300);
   ctx.save();
-
-  ctx.shadowColor="#a855f7";
-
-  ctx.shadowBlur=25;
-
-  ctx.strokeStyle="#c084fc";
-
-  ctx.lineWidth=5;
-
-  ctx.beginPath();
-
-  ctx.ellipse(
-
-    x+30,
-
-    portal.y+55,
-
-    27,
-
-    50,
-
-    0,
-
-    0,
-
-    Math.PI*2
-
-  );
-
-  ctx.stroke();
-
-  ctx.restore();
-
-}
-
-function drawParticles() {
-
-  particles.forEach(p=>{
-
-    ctx.globalAlpha=Math.max(0,p.life/50);
-
-    ctx.fillStyle=p.color;
-
-    ctx.fillRect(
-
-      p.x-camera.x,
-
-      p.y,
-
-      4,
-
-      4
-
-    );
-
-    p.x+=p.vx;
-
-    p.y+=p.vy;
-
-    p.life--;
-
-  });
-
-  ctx.globalAlpha=1;
-
-  particles=particles.filter(p=>p.life>0);
-
-}
-
-// ==========================================
-
-// PHYSICS
-
-// ==========================================
-
-function spawnParticles(x,y,color="#c084fc") {
-
-  for(let i=0;i<9;i++) {
-
-    particles.push({
-
-      x,
-
-      y,
-
-      vx:(Math.random()-.5)*4,
-
-      vy:-Math.random()*4,
-
-      life:35,
-
-      color
-
-    });
-
+  const g=ctx.createRadialGradient(cx,cy,4,cx,cy,52);
+  g.addColorStop(0,"rgba(233,213,255,.85)");
+  g.addColorStop(.5,`rgba(168,85,247,${.35+pulse*.2})`);
+  g.addColorStop(1,"rgba(168,85,247,0)");
+  ctx.shadowColor="#a855f7"; ctx.shadowBlur=28;
+  ctx.fillStyle=g;
+  ctx.beginPath(); ctx.ellipse(cx,cy,27,50,0,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle="#c084fc"; ctx.lineWidth=5; ctx.stroke();
+  ctx.shadowBlur=0;
+  ctx.fillStyle="#f5e9ff";
+  for(let i=0;i<6;i++) {
+    const a=T/500+i*Math.PI/3;
+    ctx.fillRect(cx+Math.cos(a)*20-2,cy+Math.sin(a)*38-2,4,4);
   }
-
+  ctx.restore();
+  if(Math.random()<.2) {
+    particles.push({x:portal.x+30+(Math.random()-.5)*50,y:portal.y+108,vx:0,vy:-1-Math.random(),life:50,color:"#c084fc"});
+  }
 }
-
+function drawParticles() {
+  particles.forEach(p=>{
+    ctx.globalAlpha=Math.max(0,p.life/50);
+    ctx.fillStyle=p.color;
+    ctx.fillRect(p.x-camera.x,p.y,4,4);
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.life--;
+  });
+  ctx.globalAlpha=1;
+  particles=particles.filter(p=>p.life>0);
+}
+function drawFloaters() {
+  ctx.font="22px VT323, monospace";
+  ctx.textAlign="center";
+  floaters.forEach(f=>{
+    ctx.globalAlpha=Math.min(1,f.life/25);
+    ctx.fillStyle=f.color;
+    ctx.fillText(f.text,f.x-camera.x,f.y);
+    f.y-=.7;
+    f.life--;
+  });
+  ctx.globalAlpha=1;
+  ctx.textAlign="left";
+  floaters=floaters.filter(f=>f.life>0);
+}
+function drawProgress(w) {
+  if(!myTurn || !portal) return;
+  const p=Math.max(0,Math.min(1,player.x/portal.x));
+  const bw=w-32, x=16, y=8;
+  ctx.fillStyle="#ffffff1f";
+  ctx.fillRect(x,y,bw,5);
+  const g=ctx.createLinearGradient(x,0,x+bw,0);
+  g.addColorStop(0,"#7e22ce"); g.addColorStop(1,"#c084fc");
+  ctx.fillStyle=g;
+  ctx.fillRect(x,y,bw*p,5);
+  ctx.fillStyle="#c084fc";
+  ctx.fillRect(x+bw-2,y-3,4,11);
+  ctx.fillStyle="#fbbf24";
+  ctx.fillRect(x+bw*p-3,y-2,6,9);
+}
+function drawVignette(w,h) {
+  if(!myTurn || dead || playerHealth>1) return;
+  const a=.18+.1*Math.sin(T/250);
+  const g=ctx.createRadialGradient(w/2,h/2,Math.min(w,h)*.35,w/2,h/2,Math.max(w,h)*.7);
+  g.addColorStop(0,"rgba(120,0,20,0)");
+  g.addColorStop(1,`rgba(160,0,30,${a*2})`);
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,w,h);
+}
+// ==========================================
+// PHYSICS
+// ==========================================
+function spawnParticles(x,y,color="#c084fc",n=9) {
+  for(let i=0;i<n;i++) {
+    particles.push({
+      x, y,
+      vx:(Math.random()-.5)*4,
+      vy:-Math.random()*4,
+      life:35,
+      color
+    });
+  }
+}
 function collide(a,b) {
-
   return a.x<b.x+b.w &&
-
          a.x+a.w>b.x &&
-
          a.y<b.y+b.h &&
-
          a.y+a.h>b.y;
-
 }
-
-function damagePlayer(reason="bir tuzağa yakalandın") {
+function addSouls(n,x,y) {
+  const before=Math.floor(soulCount/10);
+  soulCount+=n;
+  floaters.push({x,y,text:"+"+n+" ✧",life:50,color:"#67e8f9"});
+  if(Math.floor(soulCount/10)>before && playerHealth<3) {
+    playerHealth++;
+    floaters.push({x:player.x+14,y:player.y-20,text:"+♥",life:70,color:"#fb7185"});
+    sfx("heal");
+    toast("10 ruh = +1 can!");
+  }
+  updateAdventureHUD();
+}
+function damagePlayer(reason="bir tuzağa yakalandın",srcX=null) {
   const now=Date.now();
   if(now<damageCooldown || !myTurn || dead) return;
-  playerHealth--; damageCooldown=now+1200; deathReason=reason; screenShake=10;
+  playerHealth--;
+  damageCooldown=now+1600;
+  deathReason=reason;
+  screenShake=10;
   spawnParticles(player.x+14,player.y+18,"#fb7185");
+  sfx("hurt");
+  try { if(navigator.vibrate) navigator.vibrate(40); } catch(e) {}
   updateAdventureHUD();
   if(playerHealth<=0) { die(); return; }
-  // Short knockback and respawn at the latest safe checkpoint.
-  player.vy=-5; player.x=Math.max(checkpointX,player.x-55); player.y=Math.min(player.y,canvas.clientHeight*.55);
+  // Geri tepme: tehlikeden uzağa savrul, kısa süre dokunulmaz ol.
+  const dir=srcX===null?-player.facing:(player.x+14<srcX?-1:1);
+  player.vy=-7.5;
+  player.kb=dir*5.5;
+  player.onGround=false;
+  player.lastGrounded=0;
   toast(`Darbe aldın! Kalan can: ${playerHealth}`);
 }
-
-function updatePhysics() {
-
+function updatePhysics(dt) {
   if(!myTurn || !playing || dead) return;
-
   const w=canvas.clientWidth;
-
   const h=canvas.clientHeight;
-
-  const oldY=player.y;
-
-  player.vx=0;
-
-  if(input.left) {
-
-    player.vx=-CONFIG.SPEED;
-
-    player.facing=-1;
-
-  }
-
-  if(input.right) {
-
-    player.vx=CONFIG.SPEED;
-
-    player.facing=1;
-
-  }
-
-  if(input.jump && player.onGround) {
-
+  const now=Date.now();
+  const prevBottom=player.y+CONFIG.PLAYER_HEIGHT;
+  // --- Yatay hareket (yumuşak hızlanma) ---
+  let target=0;
+  if(input.left) { target=-CONFIG.SPEED; player.facing=-1; }
+  if(input.right) { target=CONFIG.SPEED; player.facing=1; }
+  player.vx+=(target-player.vx)*Math.min(1,(player.onGround?.5:.32)*dt);
+  if(Math.abs(player.vx)<.05) player.vx=0;
+  player.x+=(player.vx+player.kb)*dt;
+  player.kb*=Math.pow(.85,dt);
+  if(Math.abs(player.kb)<.1) player.kb=0;
+  // --- Zıplama: coyote time + tampon ---
+  if(player.onGround) player.lastGrounded=now;
+  if(input.jumpPressedAt &&
+     now-input.jumpPressedAt<=CONFIG.JUMP_BUFFER_MS &&
+     now-player.lastGrounded<=CONFIG.COYOTE_MS) {
     player.vy=CONFIG.JUMP;
-
     player.onGround=false;
-
-    spawnParticles(player.x+14,player.y+35);
-
+    player.lastGrounded=0;
+    input.jumpPressedAt=0;
+    spawnParticles(player.x+14,player.y+36,"#c9b8e0",6);
+    sfx("jump");
   }
-
-  input.jump=false;
-
-  player.x+=player.vx;
-
-  player.vy+=CONFIG.GRAVITY;
-
-  player.y+=player.vy;
-
+  // Tuşu erken bırakırsan kısa zıpla, basılı tutarsan yükseğe çık
+  const g=CONFIG.GRAVITY*(player.vy<0?(input.jumpHeld?1:2.4):1.12);
+  player.vy=Math.min(14,player.vy+g*dt);
+  player.y+=player.vy*dt;
+  // --- Platform çarpışması (üstten) ---
+  const wasGround=player.onGround;
   player.onGround=false;
-
-  const rect={
-
-    x:player.x,
-
-    y:player.y,
-
-    w:CONFIG.PLAYER_WIDTH,
-
-    h:CONFIG.PLAYER_HEIGHT
-
-  };
-
-  levelPlatforms.forEach(p=>{
-
-    if(collide(rect,p) && oldY+CONFIG.PLAYER_HEIGHT<=p.y+12 && player.vy>=0) {
-
+  let rect={x:player.x,y:player.y,w:CONFIG.PLAYER_WIDTH,h:CONFIG.PLAYER_HEIGHT};
+  for(const p of levelPlatforms) {
+    const edge={x:p.x-4,y:p.y,w:p.w+8,h:p.h};
+    if(player.vy>=0 && collide(rect,edge) && prevBottom<=p.y+6) {
+      const impact=player.vy;
       player.y=p.y-CONFIG.PLAYER_HEIGHT;
-
       player.vy=0;
-
       player.onGround=true;
-
+      if(!wasGround && impact>4) {
+        player.squash=Math.min(1,impact/12);
+        spawnParticles(player.x+14,player.y+38,"#c9b8e0",5);
+      }
+      rect.y=player.y;
     }
-
-  });
-
+  }
+  player.squash=Math.max(0,player.squash-.07*dt);
   if(player.x<0) player.x=0;
-
-  // Camera
-
-  camera.x=Math.max(
-
-    0,
-
-    Math.min(
-
-      CONFIG.WORLD_WIDTH-w,
-
-      player.x-w*.35
-
-    )
-
-  );
-
-  // Traps
-
-  levelTraps.forEach(t=>{
-
-    if(collide(rect,t)) {
-
-      die();
-
+  if(player.x>CONFIG.WORLD_WIDTH-CONFIG.PLAYER_WIDTH) player.x=CONFIG.WORLD_WIDTH-CONFIG.PLAYER_WIDTH;
+  rect={x:player.x,y:player.y,w:CONFIG.PLAYER_WIDTH,h:CONFIG.PLAYER_HEIGHT};
+  // --- Kamera (yumuşak takip + yön önü) ---
+  const targetCam=Math.max(0,Math.min(
+    CONFIG.WORLD_WIDTH-w,
+    player.x-w*.35+player.facing*30
+  ));
+  camera.x+=(targetCam-camera.x)*Math.min(1,.12*dt);
+  // --- Ruhlar (mıknatıs + toplama) ---
+  for(const s of levelSouls) {
+    if(s.taken) continue;
+    const dx=player.x+14-s.x, dy=player.y+19-s.y;
+    const d=Math.hypot(dx,dy);
+    if(d<64) {
+      const k=Math.min(.5,.14*dt);
+      s.x+=dx*k; s.y+=dy*k;
     }
-
-  });
-
-  // Portal
-
-  if(portal && collide(rect,portal)) {
-
+    if(d<26) {
+      s.taken=true;
+      spawnParticles(s.x,s.y,"#67e8f9",7);
+      addSouls(1,s.x,s.y-10);
+      sfx("soul");
+    }
+  }
+  // --- Dikenler ---
+  for(const t of levelTraps) {
+    const hb={x:t.x+4,y:t.y+5,w:t.w-8,h:t.h-5};
+    if(collide(rect,hb)) damagePlayer("dikenlere battın",t.x+t.w/2);
+  }
+  // --- Düşmanlar (devriye + üstüne zıplayarak yok etme) ---
+  for(const e of levelEnemies) {
+    if(!e.alive) continue;
+    e.x+=e.dir*e.speed*dt;
+    if(e.x<e.min) { e.x=e.min; e.dir=1; }
+    else if(e.x>e.max) { e.x=e.max; e.dir=-1; }
+    if(e.fly) {
+      e.phase+=.04*dt;
+      e.y=e.baseY+Math.sin(e.phase*2)*22;
+    }
+    const hb={x:e.x+2,y:e.y+4,w:e.w-4,h:e.h-4};
+    if(collide(rect,hb)) {
+      if(player.vy>1 && prevBottom<=e.y+12) {
+        e.alive=false;
+        player.vy=input.jumpHeld?-9.5:-7;
+        player.onGround=false;
+        spawnParticles(e.x+13,e.y+10,"#fb7185",12);
+        addSouls(2,e.x+13,e.y-8);
+        screenShake=4;
+        sfx("stomp");
+      } else {
+        damagePlayer("gölge yaratığı seni yakaladı",e.x+e.w/2);
+      }
+    }
+  }
+  // --- Kapı ---
+  if(portal && collide(rect,{x:portal.x+8,y:portal.y,w:portal.w-16,h:portal.h})) {
     nextLevel();
-
   }
-
-  // Falling
-
+  // --- Düşme (emniyet) ---
   if(player.y>h+100) {
-
+    deathReason="boşluğa düştü";
     die();
-
   }
-
-  player.frame++;
-
+  player.frame+=dt;
+  // İlerleme yazısı
+  if(portal && Math.floor(player.frame)%8===0) {
+    const pct=Math.min(100,Math.round(player.x/portal.x*100));
+    const txt=`Bölüm ${gameState.level||1}: Kapıya %${pct}`;
+    const el=$("objectiveText");
+    if(el && el.textContent!==txt) el.textContent=txt;
+  }
 }
-
 // ==========================================
-
 // DEATH
-
 // ==========================================
-
 async function die() {
-
   if(dead || !myTurn) return;
-
   dead=true;
-
   playing=false;
-
   screenShake=15;
-
   spawnParticles(
     player.x, player.y, "#fb4444"
   );
-
   try {
-
     const graveRef=await addDoc(
-
       collection(db,"graves"),
-
       {
-
         level:gameState.level,
-
         x:player.x,
-
         y:player.y,
-
         userId:currentUser.uid,
-
         createdAt:serverTimestamp()
-
       }
-
     );
-
     // Mezarlık kaydı kalıcıdır.
-
     // Hiçbir silme işlemi yapılmaz.
-
     const stateRef=doc(db,"gameState","current");
-
     await runTransaction(db,async tx=>{
-
       const snap=await tx.get(stateRef);
-
       if(!snap.exists()) return;
-
       const state=snap.data();
-
       if(state.currentUserId!==currentUser.uid ||
-
          state.currentEntryId!==currentEntry.id) return;
-
       tx.update(stateRef,{
-
         x:60,
-
         y:0,
-
         currentUserId:null,
-
         currentEntryId:null,
-
         turnEndsAt:null,
-
         updatedAt:serverTimestamp()
-
       });
-
     });
-
     await finishEntry("DONE");
-
     toast("Bir mezar daha oluştu...");
-
     showDeathScreen();
-
   } catch(e) {
-
     toast("Ölüm kaydı başarısız: "+e.message);
-
   }
-
 }
-
 function showDeathScreen() {
-
   const overlay=document.createElement("div");
-
   overlay.id="deathOverlay";
-
   overlay.innerHTML=`
-
     <div class="panel">
-
       <div class="logo pixel" style="color:#fb4444">
-
         YOU DIED
-
       </div>
-
       <div class="subtitle">
-        ${deathReason}. Topladığın ruh: ${soulCount}. Dünya bir mezar daha kazandı.
+        ${deathReason}. Ulaştığın bölüm: ${gameState.level||1}. Topladığın ruh: ${soulCount}. Dünya bir mezar daha kazandı.
       </div>
-
       <button class="btn secondary" id="deathContinue">
-
         SIRADAKİ OYUNCUYU BEKLE
-
       </button>
-
     </div>
-
   `;
-
   document.body.appendChild(overlay);
-
   $("deathContinue").onclick=()=>{
-
     overlay.remove();
-
     myTurn=false;
-
     showScreen("lobbyScreen");
-
     startQueue();
-
   };
-
 }
-
 // ==========================================
-
 // NEXT LEVEL
-
 // ==========================================
-
 async function nextLevel() {
-
   if(!myTurn || completed) return;
-
   completed=true;
-
+  const prevLevel=gameState.level||1;
   spawnParticles(
-
     player.x,
-
     player.y,
-
     "#fbbf24"
-
   );
-
   const stateRef=doc(db,"gameState","current");
-
   try {
-
     await runTransaction(db,async tx=>{
-
       const snap=await tx.get(stateRef);
-
       if(!snap.exists()) return;
-
       const state=snap.data();
-
       if(state.currentUserId!==currentUser.uid ||
-
          state.currentEntryId!==currentEntry.id) return;
-
       tx.update(stateRef,{
-
         level:(state.level||1)+1,
-
         x:60,
-
         y:0,
-
         updatedAt:serverTimestamp()
-
       });
-
     });
-
-    gameState.level++;
+    gameState.level=prevLevel+1;
     playerHealth=Math.min(3,playerHealth+1);
     checkpointX=60;
     await savePosition();
-
     completed=false;
-
     generateLevel(gameState.level);
     updateAdventureHUD();
-
     player.x=60;
-
     player.y=0;
-
-    toast("BÖLÜM TAMAMLANDI!");
-
+    player.vx=0; player.vy=0; player.kb=0;
+    camera.x=0;
+    addSouls(3,player.x,player.y-10);
+    sfx("portal");
+    toast(`BÖLÜM ${gameState.level} — +3 ruh!`);
   } catch(e) {
-
     completed=false;
-
     toast("Bölüm geçişi başarısız.");
-
   }
-
 }
-
 // ==========================================
-
 // SAVE POSITION
-
 // ==========================================
-
 let lastSave=0;
-
 async function savePosition() {
-
   if(!currentUser || !currentEntry) return;
-
   const now=Date.now();
-
   if(now-lastSave<1000) return;
-
   lastSave=now;
-
   const stateRef=doc(db,"gameState","current");
-
   try {
-
     await runTransaction(db,async tx=>{
-
       const snap=await tx.get(stateRef);
-
       if(!snap.exists()) return;
-
       const state=snap.data();
-
       if(state.currentUserId!==currentUser.uid ||
-
          state.currentEntryId!==currentEntry.id) return;
-
       tx.update(stateRef,{
-
         x:player.x,
-
         y:player.y,
-
         updatedAt:serverTimestamp()
-
       });
-
     });
-
   } catch(e) {
-
     console.error("Position save:",e);
-
   }
-
 }
-
 // ==========================================
-
 // FINISH ENTRY
-
 // ==========================================
-
 async function finishEntry(status) {
-
   if(!currentEntry) return;
-
   try {
-
     const entryRef=doc(
-
       db,"entries",currentEntry.id
-
     );
-
     const stateRef=doc(db,"gameState","current");
-
     await runTransaction(db,async tx=>{
-
       const entrySnap=await tx.get(entryRef);
-
       const stateSnap=await tx.get(stateRef);
-
       if(entrySnap.exists()) {
-
         tx.update(entryRef,{
-
           status
-
         });
-
       }
-
       if(stateSnap.exists()) {
-
         const state=stateSnap.data();
-
         if(state.currentEntryId===currentEntry.id &&
-
            state.currentUserId===currentUser.uid) {
-
           tx.update(stateRef,{
-
             currentUserId:null,
-
             currentEntryId:null,
-
             turnEndsAt:null,
-
             updatedAt:serverTimestamp()
-
           });
-
         }
-
       }
-
     });
-
   } catch(e) {
-
     console.error("Finish:",e);
-
   }
-
 }
-
 // ==========================================
-
 // HUD
-
 // ==========================================
-
 function updateGameHUD() {
-
   $("levelText").textContent=gameState.level||1;
-
   const position=getQueuePosition();
-
   $("positionText").textContent=position||"-";
-
   if(myTurn) {
-
     $("turnText").textContent="SENİN";
-
     $("overlayTitle").textContent="SENİN TURUN";
-
     $("overlayDescription").textContent=
-
       "Dünyayı keşfet.";
-
   } else {
-
     $("turnText").textContent="BEKLE";
-
     $("overlayTitle").textContent="BEKLENİYOR";
-
     const waiting=entries.filter(e=>
-
       e.status==="QUEUED"
-
     ).length;
-
     $("overlayDescription").textContent=
-
       waiting+" kişi sırada bekliyor.";
-
   }
-
 }
-
 // ==========================================
-
 // LEADERBOARD
-
 // ==========================================
-
 async function loadLeaderboard() {
-
   try {
-
     const q=query(
-
       collection(db,"entries"),
-
       where("day","==",today()),
-
       orderBy("paidAt","asc"),
-
       limit(5)
-
     );
-
     const snap=await getDocs(q);
-
     const list=$("leaderboard");
-
     list.innerHTML="";
-
     if(snap.empty) {
-
       list.innerHTML=
-
         '<div class="leader-row">Henüz oyuncu yok</div>';
-
       return;
-
     }
-
     snap.docs.forEach((d,i)=>{
-
       const data=d.data();
-
       const row=document.createElement("div");
-
       row.className="leader-row";
-
       const name=document.createElement("span");
-
       name.textContent=
-
         `${i+1}. ${data.displayName||"Gezgin"}`;
-
       const level=document.createElement("span");
-
       level.textContent=
-
         `BÖLÜM ${data.bestLevel||1}`;
-
       row.append(name,level);
-
       list.appendChild(row);
-
     });
-
   } catch(e) {
-
     console.error("Leaderboard:",e);
-
   }
-
 }
-
 // ==========================================
-
 // GHOST SYSTEM
-
 // ==========================================
-
 let ghostUnsubscribe=null;
-
 function subscribeGhost() {
-
   if(ghostUnsubscribe) {
-
     ghostUnsubscribe();
-
   }
-
   ghostUnsubscribe=onSnapshot(
-
     doc(db,"gameState","current"),
-
     snap=>{
-
       if(!snap.exists()) return;
-
       const state=snap.data();
-
       if(state.currentUserId &&
-
          state.currentUserId!==currentUser.uid) {
-
         activeGhost={
-
           x:state.x||0,
-
           y:state.y||0,
-
           userId:state.currentUserId
-
         };
-
       } else {
-
         activeGhost=null;
-
       }
-
     }
-
   );
-
 }
-
 function startGhost() {
-
   subscribeGhost();
-
 }
-
 const oldSubscribeWorld=subscribeWorld;
-
 // ==========================================
-
 // INPUT
-
 // ==========================================
-
-window.addEventListener("keydown",e=>{
-
-  if(["ArrowLeft","ArrowRight","ArrowUp"," "].includes(e.key)) {
-
-    e.preventDefault();
-
-  }
-
-  if(e.key==="ArrowLeft" || e.key==="a") {
-
-    input.left=true;
-
-  }
-
-  if(e.key==="ArrowRight" || e.key==="d") {
-
-    input.right=true;
-
-  }
-
-  if(e.key==="ArrowUp" || e.key===" " || e.key==="w") {
-
-    input.jump=true;
-
-  }
-
-});
-
-window.addEventListener("keyup",e=>{
-
-  if(e.key==="ArrowLeft" || e.key==="a") {
-
-    input.left=false;
-
-  }
-
-  if(e.key==="ArrowRight" || e.key==="d") {
-
-    input.right=false;
-
-  }
-
-});
-
-function bindHold(id,key) {
-
-  const btn=$(id);
-
-  btn.addEventListener("pointerdown",e=>{
-
-    e.preventDefault();
-
-    input[key]=true;
-
-    btn.setPointerCapture(e.pointerId);
-
-  });
-
-  const release=()=>input[key]=false;
-
-  btn.addEventListener("pointerup",release);
-
-  btn.addEventListener("pointercancel",release);
-
-  btn.addEventListener("lostpointercapture",release);
-
+const JUMP_KEYS=["arrowup"," ","w"];
+function releaseAllInputs() {
+  input.left=false; input.right=false; input.jumpHeld=false;
 }
-
-bindHold("leftBtn","left");
-
-bindHold("rightBtn","right");
-
-$("jumpBtn").addEventListener("pointerdown",e=>{
-
-  e.preventDefault();
-
-  input.jump=true;
-
+window.addEventListener("keydown",e=>{
+  if(e.target && e.target.tagName==="INPUT") return;
+  const k=e.key.toLowerCase();
+  if(["arrowleft","arrowright","arrowup"," "].includes(k)) {
+    e.preventDefault();
+  }
+  if(k==="arrowleft" || k==="a") input.left=true;
+  if(k==="arrowright" || k==="d") input.right=true;
+  if(JUMP_KEYS.includes(k)) {
+    if(!e.repeat) input.jumpPressedAt=Date.now();
+    input.jumpHeld=true;
+  }
 });
-
+window.addEventListener("keyup",e=>{
+  const k=e.key.toLowerCase();
+  if(k==="arrowleft" || k==="a") input.left=false;
+  if(k==="arrowright" || k==="d") input.right=false;
+  if(JUMP_KEYS.includes(k)) input.jumpHeld=false;
+});
+window.addEventListener("blur",releaseAllInputs);
+function bindHold(id,key) {
+  const btn=$(id);
+  btn.addEventListener("pointerdown",e=>{
+    e.preventDefault();
+    input[key]=true;
+    btn.classList.add("active");
+    btn.setPointerCapture(e.pointerId);
+  });
+  const release=()=>{ input[key]=false; btn.classList.remove("active"); };
+  btn.addEventListener("pointerup",release);
+  btn.addEventListener("pointercancel",release);
+  btn.addEventListener("lostpointercapture",release);
+}
+bindHold("leftBtn","left");
+bindHold("rightBtn","right");
+const jumpBtn=$("jumpBtn");
+jumpBtn.addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  input.jumpPressedAt=Date.now();
+  input.jumpHeld=true;
+  jumpBtn.classList.add("active");
+  jumpBtn.setPointerCapture(e.pointerId);
+});
+const releaseJump=()=>{ input.jumpHeld=false; jumpBtn.classList.remove("active"); };
+jumpBtn.addEventListener("pointerup",releaseJump);
+jumpBtn.addEventListener("pointercancel",releaseJump);
+jumpBtn.addEventListener("lostpointercapture",releaseJump);
+document.querySelector(".game-footer").addEventListener("contextmenu",e=>e.preventDefault());
+$("muteBtn").addEventListener("click",()=>{
+  muted=!muted;
+  $("muteBtn").textContent=muted?"🔇":"🔊";
+});
 // ==========================================
-
 // MAIN GAME LOOP
-
 // ==========================================
-
 function loop() {
-
   requestAnimationFrame(loop);
-
+  T=Date.now();
   if($("gameScreen").classList.contains("hidden")) {
-
+    lastFrameT=0;
     return;
-
   }
-
   const w=canvas.clientWidth;
-
   const h=canvas.clientHeight;
-
   if(!w || !h) return;
-
-  if(screenShake>0) {
-
-    ctx.save();
-
-    ctx.translate(
-
-      (Math.random()-.5)*screenShake,
-
-      (Math.random()-.5)*screenShake
-
-    );
-
-    screenShake*=.85;
-
-  }
-
-  drawBackground(w,h);
-
+  // Kare hızından bağımsız hareket (60 FPS = 1.0)
+  const dt=lastFrameT?Math.min(2.5,(T-lastFrameT)/16.667):1;
+  lastFrameT=T;
   if(!levelPlatforms.length) {
-
     generateLevel(gameState.level||1);
-
   }
-
   if(myTurn) {
-
-    updatePhysics();
-
+    updatePhysics(dt);
+  } else if(activeGhost) {
+    // İzleyici: hayaleti yumuşak takip et
+    if(!ghostPos || ghostPos.userId!==activeGhost.userId) {
+      ghostPos={x:activeGhost.x,y:activeGhost.y,userId:activeGhost.userId};
+    }
+    ghostPos.x+=(activeGhost.x-ghostPos.x)*Math.min(1,.12*dt);
+    ghostPos.y+=(activeGhost.y-ghostPos.y)*Math.min(1,.12*dt);
+    const tc=Math.max(0,Math.min(CONFIG.WORLD_WIDTH-w,ghostPos.x-w*.35));
+    camera.x+=(tc-camera.x)*Math.min(1,.08*dt);
+  } else {
+    ghostPos=null;
   }
-
+  const shaking=screenShake>.3;
+  if(shaking) {
+    ctx.save();
+    ctx.translate((Math.random()-.5)*screenShake,(Math.random()-.5)*screenShake);
+    screenShake*=.85;
+  } else {
+    screenShake=0;
+  }
+  drawBackground(w,h);
   drawPlatforms();
-  drawSouls();
-  drawEnemies();
-  drawTraps();
-  drawPortal();
-
   drawGraves();
-
-  if(activeGhost && !myTurn) {
-
-    drawPlayer(
-
-      activeGhost.x,
-
-      activeGhost.y,
-
-      .35,
-
-      true
-
-    );
-
+  drawTraps();
+  drawSouls();
+  drawPortal();
+  drawEnemies();
+  if(activeGhost && !myTurn && ghostPos) {
+    drawPlayer(ghostPos.x,ghostPos.y,.4,true);
   }
-
   drawPlayer(
     player.x, player.y,
     (Date.now()<damageCooldown && Math.floor(Date.now()/90)%2===0)?.35:1,
     false
   );
-
   drawParticles();
-
-  if(screenShake>0) ctx.restore();
-
+  drawFloaters();
+  if(shaking) ctx.restore();
+  drawVignette(w,h);
+  drawProgress(w);
   if(myTurn && Date.now()-lastSave>1500) {
-
     savePosition();
-
   }
-
 }
-
 requestAnimationFrame(loop);
-
 // ==========================================
-
 // INITIALIZATION
-
 // ==========================================
-
 if(firebaseConfigured) {
-
   try {
-
     const stateRef=doc(db,"gameState","current");
-
     const snap=await getDoc(stateRef);
-
     if(!snap.exists()) {
-
       // İlk dünya oluşturulması.
-
       // Bu işlem ilk kurulumda yetkili hesapla yapılmalıdır.
-
       await runTransaction(db,async tx=>{
-
         const current=await tx.get(stateRef);
-
         if(current.exists()) return;
-
         tx.set(stateRef,{
-
           level:1,
-
           x:60,
-
           y:0,
-
           currentUserId:null,
-
           currentEntryId:null,
-
           turnEndsAt:null,
-
           updatedAt:serverTimestamp()
-
         });
-
       });
-
     }
-
   } catch(e) {
-
     console.warn("World initialization:",e.message);
-
   }
-
   startGhost();
-
 }
-
 </script>
-
 </body>
-
 </html>
