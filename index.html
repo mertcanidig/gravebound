@@ -300,6 +300,35 @@ input:focus {
 .control.active{background:#7e30c4;transform:scale(.95);box-shadow:0 0 16px #a855f7aa inset}
 .hud-item.warn span{color:var(--red);animation:pulse .5s infinite}
 .mute-btn{background:none;border:1px solid #392850;border-radius:8px;color:#fff;font-size:16px;padding:2px 8px;line-height:1}
+
+/* ===== V3: atmosfer + yeni kontroller ===== */
+body{background:radial-gradient(ellipse at 20% 0%,#2a1450 0,transparent 55%),radial-gradient(ellipse at 85% 100%,#3a1038 0,transparent 50%),#0d0a1a;background-attachment:fixed}
+.logo{animation:flicker 4s infinite}
+@keyframes flicker{0%,92%,100%{opacity:1}93%{opacity:.6}95%{opacity:1}97%{opacity:.7}}
+.panel{animation:rise .6s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+.btn:active{transform:scale(.98)}
+.control{width:64px}
+.control.jump{width:100px;font-size:12px;margin-left:0}
+.control.dash{margin-left:auto;background:#12324d;border-color:#38bdf8;font-size:26px}
+.control.cool{opacity:.4}
+.gameover-stats{margin:10px 0 18px;color:#c4b5d8}
+
+/* ===== V4: seçim engelleme + sıralama ===== */
+html,body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;-webkit-text-size-adjust:100%}
+input{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+#gameScreen,#gameScreen *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
+#gameScreen ::selection,.control::selection{background:transparent}
+.control,.tab{outline:none;-webkit-appearance:none;appearance:none}
+.tabs{display:flex;gap:6px;margin:6px 0 10px}
+.tab{flex:1;padding:8px 4px;border:1px solid var(--border);border-radius:8px;background:#1a1229;color:var(--muted);font-size:18px}
+.tab.active{background:#4c1d95;color:#fff;border-color:var(--purple)}
+.world-stats{text-align:center;color:var(--muted);font-size:17px;margin-bottom:8px}
+#leaderboard{max-height:270px;overflow-y:auto}
+.leader-row{gap:10px}
+.leader-row.me{background:#a855f722;border-radius:6px;color:#fff}
+.lb-score{color:var(--gold);white-space:nowrap}
+.gameover-stats b{color:#fbbf24}
 </style>
 </head>
 <body>
@@ -328,10 +357,16 @@ input:focus {
     <div class="logo pixel">GRAVEBOUND</div>
     <div class="subtitle">THE WORLD REMEMBERS YOU</div>
     <div id="welcome" class="status"></div>
-    <div class="section-title">✦ BUGÜNÜN KAHRAMANLARI ✦</div>
+    <div class="section-title">✦ DÜNYA SIRALAMASI ✦</div>
+    <div class="world-stats" id="worldStats">Dünya yükleniyor...</div>
+    <div class="tabs">
+      <button class="tab active" data-tab="day">BUGÜN</button>
+      <button class="tab" data-tab="all">DÜNYA</button>
+      <button class="tab" data-tab="mine">BENİM</button>
+    </div>
     <div id="leaderboard">
       <div class="leader-row">
-        <span>Henüz oyuncu yok</span>
+        <span>Yükleniyor...</span>
         <span>—</span>
       </div>
     </div>
@@ -396,9 +431,10 @@ input:focus {
   <div class="game-footer">
     <button class="control" id="leftBtn" aria-label="Sola git">◀</button>
     <button class="control" id="rightBtn" aria-label="Sağa git">▶</button>
+    <button class="control dash" id="dashBtn" aria-label="Atıl">⚡</button>
     <button class="control jump" id="jumpBtn" aria-label="Zıpla">ZIPLA</button>
   </div>
-  <div class="game-hint">Ruh kristallerini topla ✧ • Gölgelerin üstüne zıplayarak yok et • Dikenlerden kaç • Mor kapıya ulaş</div>
+  <div class="game-hint">Ruh ✧ topla • Havada bir kez daha zıpla • ⚡ Atılma (Shift): dikenlerden geçer, gölgeleri yok eder • ♥ iyileştirir • Kapıya ulaş</div>
 </section>
 <div id="toast" role="status" aria-live="polite"></div>
 </div>
@@ -426,6 +462,9 @@ const CONFIG = Object.freeze({
   PLAYER_HEIGHT:38,
   SPEED:3.6,
   COYOTE_MS:110,
+  DASH_MS:160,
+  DASH_SPEED:9,
+  DASH_CD:900,
   JUMP_BUFFER_MS:140,
   JUMP:-11,
   GRAVITY:.5,
@@ -460,6 +499,7 @@ import {
   limit,
   onSnapshot,
   runTransaction,
+  updateDoc,
   serverTimestamp,
   Timestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -636,6 +676,10 @@ if(firebaseConfigured) {
         "Hoş geldin, "+(user.email ? user.email.split("@")[0] : "Oyuncu");
       showScreen("menuScreen");
       await loadLeaderboard();
+      const lbTimer=setInterval(()=>{
+        if(!$("menuScreen").classList.contains("hidden")) loadLeaderboard();
+      },20000);
+      unsubscribers.push(()=>clearInterval(lbTimer));
       startWindowClock();
       subscribeWorld();
     } else {
@@ -779,6 +823,7 @@ function subscribeWorld() {
         id:d.id,
         ...d.data()
       }));
+      updateWorldStats();
     },
     e=>toast("Mezarlık yüklenemedi.")
   );
@@ -828,6 +873,7 @@ function updateQueueUI() {
 }
 $("backMenuBtn").onclick=()=>{
   showScreen("menuScreen");
+  loadLeaderboard();
 };
 // ==========================================
 // QUEUE TRANSACTION
@@ -936,7 +982,9 @@ function activateTurn(state) {
   completed=false;
   player.kb=0; player.squash=0; player.lastGrounded=0;
   input.jumpPressedAt=0;
-  floaters=[]; particles=[]; camera.x=0;
+  floaters=[]; particles=[]; camera.x=0; bannerAt=Date.now(); input.dashPressed=false;
+  player.airJumps=1; player.dashUntil=0; player.dashReadyAt=0; player.combo=0;
+  clearedCount=0; killCount=0; lastReportAt=Date.now();
   updateAdventureHUD();
   gameState=state;
   player.x=state.x||60;
@@ -960,10 +1008,15 @@ function startTurnClock() {
     $("timerText").textContent=
       Math.ceil(remaining/1000);
     $("timerText").parentElement.classList.toggle("warn",remaining>0 && remaining<=10000);
+    if(remaining>0 && Date.now()-lastReportAt>12000) reportScore();
     if(remaining<=0) {
+      clearInterval(countdownTimer);
       myTurn=false;
       playing=false;
       await savePosition();
+      await reportScore();
+      await finishEntry("DONE");
+      showDeathScreen("SÜRE DOLDU","#fbbf24","Tur süren bitti, dünya seni hatırlayacak.");
       showScreen("lobbyScreen");
       $("turnOverlay").classList.remove("hidden");
       $("overlayTitle").textContent="TUR BİTTİ";
@@ -993,6 +1046,7 @@ function generateLevel(level) {
     const y=floor-(62+rand()*40);
     levelPlatforms.push({x:bx,y,w,h:16});
     levelSouls.push({x:bx+w*.5,y:y-30,r:9,taken:false});
+    if(i===2 || i===count-2) levelSouls.push({x:bx+w*.5+26,y:y-34,r:11,taken:false,heart:true});
     // İkinci kat platform (ilk platformdan zıplayarak ulaşılır)
     if(i%3===2 || (level>=3 && i%2===0)) {
       const w2=90+rand()*45;
@@ -1045,8 +1099,17 @@ let floaters=[];
 let ghostPos=null;
 let audioCtx=null;
 let muted=false;
+let bannerAt=0;
+const THEMES=[
+  {name:"Solgun Mezarlık",sky:["#0a0720","#1d1030","#2a1536"],hills:["#2a1840","#211433","#190f28"],accent:"#a855f7",fog:"168,85,247"},
+  {name:"Zümrüt Bataklık",sky:["#04140f","#0b2a22","#123a2c"],hills:["#12372b","#0d2a21","#08201a"],accent:"#34d399",fog:"52,211,153"},
+  {name:"Kızıl Harabeler",sky:["#1a0509","#3a0f16","#4d1a1c"],hills:["#4a1519","#380f14","#270a0e"],accent:"#fb7185",fog:"251,113,133"},
+  {name:"Buzul Geçidi",sky:["#06122a","#0f2547","#17375f"],hills:["#1b3a63","#142d4f","#0e2240"],accent:"#67e8f9",fog:"103,232,249"}
+];
+let TH=THEMES[0];
 player.kb=0; player.squash=0; player.lastGrounded=0;
-input.jumpHeld=false; input.jumpPressedAt=0;
+player.airJumps=1; player.dashUntil=0; player.dashReadyAt=0; player.dashDir=1; player.combo=0;
+input.jumpHeld=false; input.jumpPressedAt=0; input.dashPressed=false;
 // ---- Ses efektleri (WebAudio, çok kısık) ----
 function sfx(kind) {
   if(muted) return;
@@ -1060,7 +1123,8 @@ function sfx(kind) {
       hurt:[[220,70,.28,"sawtooth"]],
       stomp:[[200,90,.12,"square"]],
       heal:[[500,900,.25,"sine"]],
-      portal:[[400,1000,.5,"triangle"]]
+      portal:[[400,1000,.5,"triangle"]],
+      dash:[[520,180,.14,"sawtooth"]]
     };
     (tones[kind]||[]).forEach(([f0,f1,d,type])=>{
       const o=audioCtx.createOscillator(), g=audioCtx.createGain();
@@ -1107,9 +1171,9 @@ function drawDeadTree(x,gy,s) {
 }
 function drawBackground(w,h) {
   const gradient=ctx.createLinearGradient(0,0,0,h);
-  gradient.addColorStop(0,"#0a0720");
-  gradient.addColorStop(.6,"#1d1030");
-  gradient.addColorStop(1,"#2a1536");
+  gradient.addColorStop(0,TH.sky[0]);
+  gradient.addColorStop(.6,TH.sky[1]);
+  gradient.addColorStop(1,TH.sky[2]);
   ctx.fillStyle=gradient;
   ctx.fillRect(0,0,w,h);
   // Ay
@@ -1134,9 +1198,9 @@ function drawBackground(w,h) {
   ctx.globalAlpha=1;
   // Uzak tepeler (3 katman)
   const layers=[
-    {color:"#2a1840",base:.60,speed:.06},
-    {color:"#211433",base:.66,speed:.12},
-    {color:"#190f28",base:.72,speed:.20}
+    {color:TH.hills[0],base:.60,speed:.06},
+    {color:TH.hills[1],base:.66,speed:.12},
+    {color:TH.hills[2],base:.72,speed:.20}
   ];
   layers.forEach((L,layer)=>{
     ctx.beginPath();
@@ -1159,10 +1223,21 @@ function drawBackground(w,h) {
   }
   // Sis
   const fog=ctx.createLinearGradient(0,h*.6,0,h);
-  fog.addColorStop(0,"rgba(168,85,247,0)");
-  fog.addColorStop(1,"rgba(168,85,247,.14)");
+  fog.addColorStop(0,`rgba(${TH.fog},0)`);
+  fog.addColorStop(1,`rgba(${TH.fog},.14)`);
   ctx.fillStyle=fog;
   ctx.fillRect(0,h*.6,w,h*.4);
+  // Ateşböcekleri
+  ctx.save();
+  ctx.shadowColor=TH.accent; ctx.shadowBlur=10;
+  ctx.fillStyle=TH.accent;
+  for(let i=0;i<16;i++) {
+    const fx=(((i*211-camera.x*.6+Math.sin(T/1500+i)*22)%w)+w)%w;
+    const fy=h*.35+((i*97)%Math.max(1,h*.4))+Math.sin(T/900+i*1.3)*10;
+    ctx.globalAlpha=.35+.45*Math.abs(Math.sin(T/700+i));
+    ctx.fillRect(fx,fy,3,3);
+  }
+  ctx.restore();
 }
 function drawPlayer(x,y,alpha=1,ghost=false) {
   const sx=x-camera.x;
@@ -1174,6 +1249,7 @@ function drawPlayer(x,y,alpha=1,ghost=false) {
   const runBob=moving?Math.abs(Math.sin(player.frame*.55))*-1.5:0;
   ctx.save();
   ctx.globalAlpha=alpha;
+  if(!ghost && Date.now()<player.dashUntil){ ctx.shadowColor="#38bdf8"; ctx.shadowBlur=16; }
   // Gölge
   ctx.fillStyle="#0008";
   ctx.beginPath(); ctx.ellipse(sx+14,y+39,15,4,0,0,Math.PI*2); ctx.fill();
@@ -1243,8 +1319,8 @@ function drawPlatforms() {
     ctx.fillRect(x,p.y,p.w,p.h);
     // Parlayan üst çizgi
     ctx.save();
-    ctx.shadowColor="#a855f7"; ctx.shadowBlur=12;
-    ctx.fillStyle="#a855f7";
+    ctx.shadowColor=TH.accent; ctx.shadowBlur=12;
+    ctx.fillStyle=TH.accent;
     ctx.fillRect(x,p.y,p.w,4);
     ctx.restore();
     // Taş / çatlak detayı (sadece görünen kısım)
@@ -1284,6 +1360,21 @@ function drawSouls() {
     if(x<-30 || x>cw+30) return;
     const pulse=1+Math.sin(T/180+s.x)*.18;
     const y=s.y+Math.sin(T/320+s.x)*3;
+    if(s.heart) {
+      ctx.save();
+      ctx.translate(x,y);
+      const k=1+Math.sin(T/200)*.1;
+      ctx.scale(k,k);
+      ctx.shadowColor="#fb7185"; ctx.shadowBlur=16;
+      ctx.fillStyle="#fb7185";
+      ctx.beginPath();
+      ctx.moveTo(0,8);
+      ctx.bezierCurveTo(-14,-2,-8,-13,0,-5);
+      ctx.bezierCurveTo(8,-13,14,-2,0,8);
+      ctx.fill();
+      ctx.restore();
+      return;
+    }
     ctx.save();
     ctx.translate(x,y);
     ctx.rotate(Math.PI/4);
@@ -1392,6 +1483,13 @@ function drawProgress(w) {
   g.addColorStop(0,"#7e22ce"); g.addColorStop(1,"#c084fc");
   ctx.fillStyle=g;
   ctx.fillRect(x,y,bw*p,5);
+  // Diğer oyuncuların öldüğü yerler
+  ctx.fillStyle="#fb4444";
+  graves.forEach(gr=>{
+    if(gr.level!==(gameState.level||1)) return;
+    const gx=x+bw*Math.max(0,Math.min(1,gr.x/portal.x));
+    ctx.fillRect(gx-1,y-1,2,7);
+  });
   ctx.fillStyle="#c084fc";
   ctx.fillRect(x+bw-2,y-3,4,11);
   ctx.fillStyle="#fbbf24";
@@ -1405,6 +1503,22 @@ function drawVignette(w,h) {
   g.addColorStop(1,`rgba(160,0,30,${a*2})`);
   ctx.fillStyle=g;
   ctx.fillRect(0,0,w,h);
+}
+function drawBanner(w,h) {
+  const age=T-bannerAt;
+  if(!myTurn || age>2800) return;
+  const a=age<300?age/300:(age>2200?1-(age-2200)/600:1);
+  ctx.save();
+  ctx.globalAlpha=Math.max(0,a);
+  ctx.textAlign="center";
+  ctx.shadowColor=TH.accent; ctx.shadowBlur=20;
+  ctx.fillStyle="#ffffff";
+  ctx.font="20px 'Press Start 2P', monospace";
+  ctx.fillText("BÖLÜM "+(gameState.level||1),w/2,h*.3);
+  ctx.font="30px VT323, monospace";
+  ctx.fillStyle=TH.accent;
+  ctx.fillText(TH.name,w/2,h*.3+34);
+  ctx.restore();
 }
 // ==========================================
 // PHYSICS
@@ -1440,7 +1554,7 @@ function addSouls(n,x,y) {
 }
 function damagePlayer(reason="bir tuzağa yakalandın",srcX=null) {
   const now=Date.now();
-  if(now<damageCooldown || !myTurn || dead) return;
+  if(now<damageCooldown || now<player.dashUntil || !myTurn || dead) return;
   playerHealth--;
   damageCooldown=now+1600;
   deathReason=reason;
@@ -1468,8 +1582,24 @@ function updatePhysics(dt) {
   let target=0;
   if(input.left) { target=-CONFIG.SPEED; player.facing=-1; }
   if(input.right) { target=CONFIG.SPEED; player.facing=1; }
-  player.vx+=(target-player.vx)*Math.min(1,(player.onGround?.5:.32)*dt);
-  if(Math.abs(player.vx)<.05) player.vx=0;
+  if(input.dashPressed) {
+    input.dashPressed=false;
+    if(now>=player.dashReadyAt) {
+      player.dashUntil=now+CONFIG.DASH_MS;
+      player.dashReadyAt=now+CONFIG.DASH_CD;
+      player.dashDir=input.left?-1:(input.right?1:player.facing);
+      sfx("dash");
+    }
+  }
+  const dashing=now<player.dashUntil;
+  if(dashing) {
+    player.vx=player.dashDir*CONFIG.DASH_SPEED;
+    player.facing=player.dashDir;
+    particles.push({x:player.x+14,y:player.y+10+Math.random()*22,vx:-player.dashDir*.6,vy:0,life:22,color:"#7dd3fc"});
+  } else {
+    player.vx+=(target-player.vx)*Math.min(1,(player.onGround?.5:.32)*dt);
+    if(Math.abs(player.vx)<.05) player.vx=0;
+  }
   player.x+=(player.vx+player.kb)*dt;
   player.kb*=Math.pow(.85,dt);
   if(Math.abs(player.kb)<.1) player.kb=0;
@@ -1484,10 +1614,26 @@ function updatePhysics(dt) {
     input.jumpPressedAt=0;
     spawnParticles(player.x+14,player.y+36,"#c9b8e0",6);
     sfx("jump");
+  } else if(input.jumpPressedAt &&
+     now-input.jumpPressedAt<=CONFIG.JUMP_BUFFER_MS &&
+     !player.onGround && player.airJumps>0) {
+    // Çift zıplama
+    player.airJumps--;
+    player.vy=CONFIG.JUMP*.92;
+    input.jumpPressedAt=0;
+    for(let i=0;i<8;i++) {
+      const a=i/8*Math.PI*2;
+      particles.push({x:player.x+14,y:player.y+38,vx:Math.cos(a)*2.2,vy:Math.sin(a)*.8,life:26,color:"#e9d5ff"});
+    }
+    sfx("jump");
   }
   // Tuşu erken bırakırsan kısa zıpla, basılı tutarsan yükseğe çık
-  const g=CONFIG.GRAVITY*(player.vy<0?(input.jumpHeld?1:2.4):1.12);
-  player.vy=Math.min(14,player.vy+g*dt);
+  if(dashing) {
+    player.vy=.5;
+  } else {
+    const g=CONFIG.GRAVITY*(player.vy<0?(input.jumpHeld?1:2.4):1.12);
+    player.vy=Math.min(14,player.vy+g*dt);
+  }
   player.y+=player.vy*dt;
   // --- Platform çarpışması (üstten) ---
   const wasGround=player.onGround;
@@ -1500,6 +1646,8 @@ function updatePhysics(dt) {
       player.y=p.y-CONFIG.PLAYER_HEIGHT;
       player.vy=0;
       player.onGround=true;
+      player.airJumps=1;
+      player.combo=0;
       if(!wasGround && impact>4) {
         player.squash=Math.min(1,impact/12);
         spawnParticles(player.x+14,player.y+38,"#c9b8e0",5);
@@ -1528,9 +1676,22 @@ function updatePhysics(dt) {
     }
     if(d<26) {
       s.taken=true;
-      spawnParticles(s.x,s.y,"#67e8f9",7);
-      addSouls(1,s.x,s.y-10);
-      sfx("soul");
+      if(s.heart) {
+        spawnParticles(s.x,s.y,"#fb7185",10);
+        if(playerHealth<3) {
+          playerHealth++;
+          floaters.push({x:s.x,y:s.y-10,text:"+♥",life:70,color:"#fb7185"});
+          updateAdventureHUD();
+          sfx("heal");
+        } else {
+          addSouls(5,s.x,s.y-10);
+          sfx("soul");
+        }
+      } else {
+        spawnParticles(s.x,s.y,"#67e8f9",7);
+        addSouls(1,s.x,s.y-10);
+        sfx("soul");
+      }
     }
   }
   // --- Dikenler ---
@@ -1550,12 +1711,17 @@ function updatePhysics(dt) {
     }
     const hb={x:e.x+2,y:e.y+4,w:e.w-4,h:e.h-4};
     if(collide(rect,hb)) {
-      if(player.vy>1 && prevBottom<=e.y+12) {
+      if(dashing || (player.vy>1 && prevBottom<=e.y+12)) {
         e.alive=false;
-        player.vy=input.jumpHeld?-9.5:-7;
-        player.onGround=false;
+        if(!dashing) {
+          player.vy=input.jumpHeld?-9.5:-7;
+          player.onGround=false;
+        }
         spawnParticles(e.x+13,e.y+10,"#fb7185",12);
-        addSouls(2,e.x+13,e.y-8);
+        killCount++;
+        player.combo=Math.min(5,(player.combo||0)+1);
+        addSouls(2*player.combo,e.x+13,e.y-8);
+        if(player.combo>1) floaters.push({x:e.x+13,y:e.y-28,text:"KOMBO x"+player.combo+"!",life:60,color:"#fbbf24"});
         screenShake=4;
         sfx("stomp");
       } else {
@@ -1622,29 +1788,49 @@ async function die() {
       });
     });
     await finishEntry("DONE");
+    await reportScore();
     toast("Bir mezar daha oluştu...");
     showDeathScreen();
   } catch(e) {
     toast("Ölüm kaydı başarısız: "+e.message);
   }
 }
-function showDeathScreen() {
+function showDeathScreen(title="YOU DIED",color="#fb4444",reason=`${deathReason}. Dünya bir mezar daha kazandı.`) {
+  const old=$("deathOverlay");
+  if(old) old.remove();
   const overlay=document.createElement("div");
   overlay.id="deathOverlay";
   overlay.innerHTML=`
     <div class="panel">
-      <div class="logo pixel" style="color:#fb4444">
-        YOU DIED
+      <div class="logo pixel" style="color:${color}">
+        ${title}
       </div>
       <div class="subtitle">
-        ${deathReason}. Ulaştığın bölüm: ${gameState.level||1}. Topladığın ruh: ${soulCount}. Dünya bir mezar daha kazandı.
+        ${reason}
       </div>
+      <div class="gameover-stats">
+        Bölüm: <b>${gameState.level||1}</b> • Ruh: <b>${soulCount}</b> • Puan: <b>${runScore()}</b>
+      </div>
+      <div class="gameover-stats" id="deathRank">Sıralama hesaplanıyor...</div>
+      <button class="btn gold" id="deathRankBtn">
+        SIRALAMAYI GÖR
+      </button>
       <button class="btn secondary" id="deathContinue">
         SIRADAKİ OYUNCUYU BEKLE
       </button>
     </div>
   `;
   document.body.appendChild(overlay);
+  getDailyRank().then(r=>{
+    const el=$("deathRank");
+    if(el) el.textContent=r?`Bugünkü sıran: #${r.rank} / ${r.total}`:"";
+  });
+  $("deathRankBtn").onclick=()=>{
+    overlay.remove();
+    myTurn=false;
+    showScreen("menuScreen");
+    loadLeaderboard("day");
+  };
   $("deathContinue").onclick=()=>{
     overlay.remove();
     myTurn=false;
@@ -1680,6 +1866,8 @@ async function nextLevel() {
       });
     });
     gameState.level=prevLevel+1;
+    clearedCount++;
+    reportScore();
     playerHealth=Math.min(3,playerHealth+1);
     checkpointX=60;
     await savePosition();
@@ -1690,6 +1878,7 @@ async function nextLevel() {
     player.y=0;
     player.vx=0; player.vy=0; player.kb=0;
     camera.x=0;
+    bannerAt=Date.now();
     addSouls(3,player.x,player.y-10);
     sfx("portal");
     toast(`BÖLÜM ${gameState.level} — +3 ruh!`);
@@ -1764,6 +1953,7 @@ async function finishEntry(status) {
 // HUD
 // ==========================================
 function updateGameHUD() {
+  updateWorldStats();
   $("levelText").textContent=gameState.level||1;
   const position=getQueuePosition();
   $("positionText").textContent=position||"-";
@@ -1785,39 +1975,171 @@ function updateGameHUD() {
 // ==========================================
 // LEADERBOARD
 // ==========================================
-async function loadLeaderboard() {
+let clearedCount=0;
+let killCount=0;
+let lastReportAt=0;
+let scoreWarned=false;
+let lbTab="day";
+let lbToken=0;
+const MEDALS=["🥇","🥈","🥉"];
+function runScore() {
+  return soulCount+clearedCount*25;
+}
+async function reportScore() {
+  lastReportAt=Date.now();
+  if(!db || !currentEntry || !currentUser) return;
   try {
-    const q=query(
-      collection(db,"entries"),
-      where("day","==",today()),
-      orderBy("paidAt","asc"),
-      limit(5)
-    );
-    const snap=await getDocs(q);
-    const list=$("leaderboard");
-    list.innerHTML="";
-    if(snap.empty) {
-      list.innerHTML=
-        '<div class="leader-row">Henüz oyuncu yok</div>';
-      return;
-    }
-    snap.docs.forEach((d,i)=>{
-      const data=d.data();
-      const row=document.createElement("div");
-      row.className="leader-row";
-      const name=document.createElement("span");
-      name.textContent=
-        `${i+1}. ${data.displayName||"Gezgin"}`;
-      const level=document.createElement("span");
-      level.textContent=
-        `BÖLÜM ${data.bestLevel||1}`;
-      row.append(name,level);
-      list.appendChild(row);
+    const best=Math.max(Number(currentEntry.bestLevel)||1,gameState.level||1);
+    await updateDoc(doc(db,"entries",currentEntry.id),{
+      score:runScore(),
+      souls:soulCount,
+      cleared:clearedCount,
+      kills:killCount,
+      bestLevel:best
     });
+    currentEntry.bestLevel=best;
   } catch(e) {
-    console.error("Leaderboard:",e);
+    console.warn("Skor yazılamadı:",e.message);
+    if(!scoreWarned) {
+      scoreWarned=true;
+      toast("Skor kaydedilemedi (Firestore kurallarını kontrol et).");
+    }
   }
 }
+function updateWorldStats() {
+  const el=$("worldStats");
+  if(!el) return;
+  el.textContent=
+    `🌍 Dünya Bölümü ${gameState.level||1} • ⚰ ${graves.length} mezar • 👥 Bugün ${entries.length} oyuncu`;
+}
+function entryScore(e) {
+  return Number(e.score)||0;
+}
+// Her oyuncu için en iyi kaydı al, puana göre sırala
+function rankEntries(list) {
+  const best=new Map();
+  list.forEach(e=>{
+    const key=e.userId||e.id;
+    const cur=best.get(key);
+    if(!cur || entryScore(e)>entryScore(cur)) best.set(key,e);
+  });
+  return [...best.values()].sort((a,b)=>
+    entryScore(b)-entryScore(a) ||
+    (Number(b.souls)||0)-(Number(a.souls)||0)
+  );
+}
+function renderRows(rows,emptyText) {
+  const list=$("leaderboard");
+  list.innerHTML="";
+  if(!rows.length) {
+    const d=document.createElement("div");
+    d.className="leader-row";
+    d.textContent=emptyText;
+    list.appendChild(d);
+    return;
+  }
+  rows.forEach(r=>{
+    const row=document.createElement("div");
+    row.className="leader-row"+(r.me?" me":"");
+    const left=document.createElement("span");
+    left.textContent=r.label;
+    const right=document.createElement("span");
+    right.className="lb-score";
+    right.textContent=r.right;
+    row.append(left,right);
+    list.appendChild(row);
+  });
+}
+function rowFor(e,rank) {
+  const label=(rank<=3?MEDALS[rank-1]:rank+".")+" "+(e.displayName||"Gezgin");
+  return {
+    label,
+    right:`⭐ ${entryScore(e)} • B${e.bestLevel||1}`,
+    me:!!currentUser && e.userId===currentUser.uid
+  };
+}
+async function loadMyEntries() {
+  const snap=await getDocs(query(
+    collection(db,"entries"),
+    where("userId","==",currentUser.uid)
+  ));
+  return snap.docs.map(d=>({id:d.id,...d.data()}));
+}
+async function loadLeaderboard(tab=lbTab) {
+  if(!db || !currentUser) return;
+  lbTab=tab;
+  const token=++lbToken;
+  document.querySelectorAll(".tab").forEach(b=>{
+    b.classList.toggle("active",b.dataset.tab===tab);
+  });
+  try {
+    if(tab==="day") {
+      const snap=await getDocs(query(
+        collection(db,"entries"),
+        where("day","==",today())
+      ));
+      if(token!==lbToken) return;
+      const ranked=rankEntries(snap.docs.map(d=>({id:d.id,...d.data()})));
+      renderRows(
+        ranked.slice(0,20).map((e,i)=>rowFor(e,i+1)),
+        "Bugün henüz oyuncu yok"
+      );
+    } else if(tab==="all") {
+      const snap=await getDocs(query(
+        collection(db,"entries"),
+        orderBy("score","desc"),
+        limit(60)
+      ));
+      if(token!==lbToken) return;
+      const ranked=rankEntries(snap.docs.map(d=>({id:d.id,...d.data()})));
+      const rows=ranked.slice(0,20).map((e,i)=>rowFor(e,i+1));
+      const inTop=ranked.slice(0,20).some(e=>e.userId===currentUser.uid);
+      if(!inTop) {
+        const mine=rankEntries(await loadMyEntries());
+        if(token!==lbToken) return;
+        if(mine.length && entryScore(mine[0])>0) {
+          rows.push({label:"… Sen",right:`⭐ ${entryScore(mine[0])} • B${mine[0].bestLevel||1}`,me:true});
+        }
+      }
+      renderRows(rows,"Henüz puan yok");
+    } else {
+      const mine=(await loadMyEntries())
+        .sort((a,b)=>String(b.day).localeCompare(String(a.day)));
+      if(token!==lbToken) return;
+      const total=mine.reduce((n,e)=>n+entryScore(e),0);
+      const best=mine.reduce((n,e)=>Math.max(n,entryScore(e)),0);
+      const rows=[];
+      if(mine.length) {
+        rows.push({label:`Toplam • ${mine.length} gün`,right:`⭐ ${total}`,me:true});
+        rows.push({label:"En iyi gün",right:`⭐ ${best}`,me:true});
+      }
+      mine.slice(0,15).forEach(e=>{
+        rows.push({label:String(e.day||"—"),right:`⭐ ${entryScore(e)} • ${Number(e.souls)||0}✧`,me:false});
+      });
+      renderRows(rows,"Henüz bir oyunun yok");
+    }
+  } catch(e) {
+    console.error("Leaderboard:",e);
+    if(token===lbToken) renderRows([],"Sıralama yüklenemedi");
+  }
+}
+async function getDailyRank() {
+  try {
+    const snap=await getDocs(query(
+      collection(db,"entries"),
+      where("day","==",today())
+    ));
+    const ranked=rankEntries(snap.docs.map(d=>({id:d.id,...d.data()})));
+    const i=ranked.findIndex(e=>e.userId===currentUser.uid);
+    return i<0?null:{rank:i+1,total:ranked.length};
+  } catch(e) {
+    return null;
+  }
+}
+document.querySelectorAll(".tab").forEach(b=>{
+  b.onclick=()=>loadLeaderboard(b.dataset.tab);
+});
+
 // ==========================================
 // GHOST SYSTEM
 // ==========================================
@@ -1863,6 +2185,7 @@ window.addEventListener("keydown",e=>{
   }
   if(k==="arrowleft" || k==="a") input.left=true;
   if(k==="arrowright" || k==="d") input.right=true;
+  if(k==="shift" || k==="k" || k==="j") input.dashPressed=true;
   if(JUMP_KEYS.includes(k)) {
     if(!e.repeat) input.jumpPressedAt=Date.now();
     input.jumpHeld=true;
@@ -1902,7 +2225,28 @@ const releaseJump=()=>{ input.jumpHeld=false; jumpBtn.classList.remove("active")
 jumpBtn.addEventListener("pointerup",releaseJump);
 jumpBtn.addEventListener("pointercancel",releaseJump);
 jumpBtn.addEventListener("lostpointercapture",releaseJump);
-document.querySelector(".game-footer").addEventListener("contextmenu",e=>e.preventDefault());
+$("gameScreen").addEventListener("contextmenu",e=>e.preventDefault());
+document.addEventListener("selectstart",e=>{
+  const t=e.target.nodeType===3?e.target.parentElement:e.target;
+  if(!(t && t.closest && t.closest("input"))) e.preventDefault();
+});
+document.addEventListener("dragstart",e=>e.preventDefault());
+document.addEventListener("gesturestart",e=>e.preventDefault());
+document.addEventListener("touchstart",()=>{
+  const sel=window.getSelection && window.getSelection();
+  if(sel && sel.rangeCount && !document.activeElement.matches("input")) sel.removeAllRanges();
+},{passive:true});
+const dashBtn=$("dashBtn");
+dashBtn.addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  input.dashPressed=true;
+  dashBtn.classList.add("active");
+  dashBtn.setPointerCapture(e.pointerId);
+});
+const releaseDash=()=>dashBtn.classList.remove("active");
+dashBtn.addEventListener("pointerup",releaseDash);
+dashBtn.addEventListener("pointercancel",releaseDash);
+dashBtn.addEventListener("lostpointercapture",releaseDash);
 $("muteBtn").addEventListener("click",()=>{
   muted=!muted;
   $("muteBtn").textContent=muted?"🔇":"🔊";
@@ -1923,6 +2267,8 @@ function loop() {
   // Kare hızından bağımsız hareket (60 FPS = 1.0)
   const dt=lastFrameT?Math.min(2.5,(T-lastFrameT)/16.667):1;
   lastFrameT=T;
+  TH=THEMES[((gameState.level||1)-1)%THEMES.length];
+  $("dashBtn").classList.toggle("cool",T<player.dashReadyAt);
   if(!levelPlatforms.length) {
     generateLevel(gameState.level||1);
   }
@@ -1968,6 +2314,7 @@ function loop() {
   if(shaking) ctx.restore();
   drawVignette(w,h);
   drawProgress(w);
+  drawBanner(w,h);
   if(myTurn && Date.now()-lastSave>1500) {
     savePosition();
   }
